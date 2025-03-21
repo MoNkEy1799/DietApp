@@ -6,23 +6,23 @@
     <title>Nutrition Tracker</title>
     <!-- <script src="service-worker.js"></script> -->
     <script src="chart.js"></script>
-    <script src="app.js" defer></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <p id="dateDisplay"><b>Today:</b> 01.02.2025</p>
     <div id="personSelectorContainer">
-        <input type="radio" id="personL" name="person" value="L" checked>
+        <input type="radio" id="personL" name="person" value="louis" checked onclick="pressPersonSelect()">
         <label for="personL">Louis</label>
 
-        <input type="radio" id="personJ" name="person" value="J">
+        <input type="radio" id="personJ" name="person" value="julia" onclick="pressPersonSelect()">
         <label for="personJ">Julia</label>
     </div>
 
     <div class="tab-container">
-        <button class="tablink active" onclick="openTab(event, 'Tracker')">Tracker</button>
-        <button class="tablink" onclick="openTab(event, 'Foods')">Foods</button>
-        <button class="tablink" onclick="openTab(event, 'Weight')">Weight</button>
-        <button class="tablink" onclick="openTab(event, 'HistorySettings')">Settings</button>
+        <button class="tablink active" onclick="openTab(event, 'Tracker')" value="tracker">Tracker</button>
+        <button class="tablink" onclick="openTab(event, 'Foods')" value="foods">Foods</button>
+        <button class="tablink" onclick="openTab(event, 'Weight')" value="weight">Weight</button>
+        <button class="tablink" onclick="openTab(event, 'HistorySettings')" value="settings">Settings</button>
     </div>
     
     <div id="Tracker" class="tabcontent active">
@@ -32,7 +32,7 @@
         
         <h3>Remaining for today:</h3>
         <p>Protein: <span id="remainingProtein">--</span></p>
-        <p>Calories: <span id="remainingKcal">--</span></p>
+        <p>Calories: <span id="remainingCalories">--</span></p>
         
         <div class="horizontal-line"></div>
 
@@ -63,9 +63,10 @@
         <div class="date-button-container">
             <div class="input-group">
                 <label for="dateSelector">Date:</label>
-                <select id="dateSelector">
-                    <option>Today</option>
-                    <option>Tomorrow</option>
+                <select id="dateSelector" >
+                    <option value="Yesterday">Yesterday</option>
+                    <option selected value="Today">Today</option>
+                    <option value="Tomorrow">Tomorrow</option>
                 </select>
                 <button id="addButton">Add</button>
                 <button id="undoButton">Undo</button>
@@ -126,5 +127,7 @@
 
         <p>Adjust preferences and app settings.</p>
     </div>
+
+    <script src="app.js" defer></script>
 </body>
 </html>

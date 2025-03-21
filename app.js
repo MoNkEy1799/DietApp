@@ -14,8 +14,8 @@ function openTab(evt, tabName) {
 }
 
 function dateToString(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
 
     return `${day}.${month}.${year}`;
@@ -30,7 +30,7 @@ function stringToDate(string) {
     return new Date(year, month, day);
 }
 
-function checkdateDifference(date, diff) {
+function checkDateDifference(date, diff) {
     date.setDate(date.getDate() - diff);
     return date.getDate() === window.today.getDate() &&
            date.getMonth() === window.today.getMonth() &&
@@ -39,22 +39,24 @@ function checkdateDifference(date, diff) {
 
 function loadData() {
     window.today = new Date();
-    try {
-        window.data = JSON.parse(localStorage.getItem("data"));
-    }
-    catch (error) {
-        window.data = {
+    window.storage = JSON.parse(localStorage.getItem("storage"));
+    if (window.storage === null) {
+        window.storage = {
             louis: {
+                proteinYesterday: 0,
+                caloriesYesterday: 0,
                 proteinToday: 0,
                 caloriesToday: 0,
                 proteinTomorrow: 0,
                 caloriesTomorrow: 0,
                 proteinSetting: 120,
                 caloriesSetting: 2000,
-                weights: [],
-                dates: [],
+                weights: [2, 3],
+                dates: ["e", "f"],
             },
             julia: {
+                proteinYesterday: 0,
+                caloriesYesterday: 0,
                 proteinToday: 0,
                 caloriesToday: 0,
                 proteinTomorrow: 0,
@@ -68,43 +70,94 @@ function loadData() {
             today: undefined,
         }
     }
-    if (typeof window.data.today === "undefined") {
-        window.data.today = dateToString(window.today);
+
+    if (typeof window.storage.today === "undefined") {
+        window.storage.today = dateToString(window.today);
     }
-    // save data is from yesterday
-    if (checkdateDifference(window.date.today, 0)) {
+    // loading on same day --> keep data, do nothing
+    if (checkDateDifference(window.today, 0)) {
 
     }
-    if (checkIfYesterday(window.data.today)) {
+    // loading on next day -> today is becoming yesterday and tomorrow is becoming today
+    else if (checkDateDifference(window.today, 1)) {
         for (let name of ["louis", "julia"]) {
-            let item = window.data[name];
+            let item = window.storage[name];
+            item.proteinYesterday = item.proteinToday;
+            item.caloriesYesterday = item.caloriesToday;
             item.proteinToday = item.proteinTomorrow;
             item.caloriesToday = item.caloriesTomorrow;
             item.proteinTomorrow = 0;
             item.caloriesTomorrow = 0;
         }
     }
+    // loading on any later date -> set everything to 0
+    else {
+        for (let name of ["louis", "julia"]) {
+            let item = window.storage[name];
+            item.proteinYesterday = 0;
+            item.caloriesYesterday = 0;
+            item.proteinToday = 0;
+            item.caloriesToday = 0;
+            item.proteinTomorrow = 0;
+            item.caloriesTomorrow = 0;
+        }
+    }
+    // set the new date
+    window.storage.today = dateToString(window.today);
+    saveData();
+    document.getElementById("dateDisplay").innerHTML = "<b>Today: </b>" + window.storage.today;
 }
 
 function saveData() {
-
+    localStorage.setItem("data", JSON.stringify(window.storage));
 }
 
-const table = document.getElementById("weightTable");
+function updateTracker(person) {
+    const date = document.getElementById("dateSelector").value;
+    document.getElementById("remainingProtein").innerHTML = window.storage[person].proteinSetting - window.storage[person]["protein"+date];
+    document.getElementById("remainingCalories").innerHTML = window.storage[person].caloriesSetting - window.storage[person]["calories"+date];
+}
 
-weightData.forEach(item => {
-    const row = table.insertRow();
-    row.insertCell(0).textContent = item.date;
-    row.insertCell(1).textContent = item.weight;
-});
+function updateWeight(person, updatePlot) {
+    const table = document.getElementById("weightTable");
+    table.getElementsByTagName("tbody")[0].innerHTML = "";
+    for (let i = 0; i < window.storage[person].dates.length; i++) {
+        const row = table.insertRow();
+        row.insertCell(0).textContent = window.storage[person].dates[i];
+        row.insertCell(1).textContent = window.storage[person].weights[i];
+    }
+    if (updatePlot) {
+        weightChart.data.labels = window.storage[person].dates;
+        weightChart.data.datasets[0] = window.storage[person].weights;
+        weightChart.update();
+    }
+}
 
-const ctx = document.getElementById('scatter').getContext('2d');
-const myChart = new Chart(ctx, {
+function pressPersonSelect() {
+    const activeTab = document.querySelector('.tablink.active').value;
+    const person = document.querySelector("input[name='person']:checked").value;
+    if (activeTab === "tracker") {
+        updateTracker(person);
+    }
+    else if (activeTab === "weight") {
+        updateWeight(person, true);
+    }
+    else if (activeTab === "settings") {
+        updateSettings(person);
+    }
+}
+
+// first thing is load data from local storage
+loadData();
+updateTracker("louis");
+updateWeight("louis");
+
+const weightChart = new Chart(document.getElementById('scatter').getContext('2d'), {
     type: 'line',
     data: {
-        labels: weightData.map(item => item.date),
+        labels: window.storage.louis.dates,
         datasets: [{
-            data: weightData.map(item => item.weight),
+            data: window.storage.louis.weights,
             borderWidth: 1
         }]
     },
@@ -124,3 +177,38 @@ const myChart = new Chart(ctx, {
         }
     }
 });
+
+// const table = document.getElementById("weightTable");
+
+// weightData.forEach(item => {
+//     const row = table.insertRow();
+//     row.insertCell(0).textContent = item.date;
+//     row.insertCell(1).textContent = item.weight;
+// });
+
+// const ctx = document.getElementById('scatter').getContext('2d');
+// const myChart = new Chart(ctx, {
+//     type: 'line',
+//     data: {
+//         labels: weightData.map(item => item.date),
+//         datasets: [{
+//             data: weightData.map(item => item.weight),
+//             borderWidth: 1
+//         }]
+//     },
+//     options: {
+//         plugins: {
+//             legend: {
+//                 display: false
+//             }
+//         },
+//         scales: {
+//             x: {
+//                 ticks: {
+//                     maxRotation: 60,
+//                     minRotation: 60
+//                 }
+//             }
+//         }
+//     }
+// });
