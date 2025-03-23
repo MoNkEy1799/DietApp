@@ -43,25 +43,25 @@ function loadData() {
     window.receipes = JSON.parse(localStorage.getItem("receipes"));
     if (window.storage === null) {
         window.storage = {
-            louis: {
-                proteinYesterday: 0,
-                caloriesYesterday: 0,
-                proteinToday: 0,
-                caloriesToday: 0,
-                proteinTomorrow: 0,
-                caloriesTomorrow: 0,
+            person1: {
+                proteinYesterday: [1],
+                caloriesYesterday: [1],
+                proteinToday: [2],
+                caloriesToday: [2],
+                proteinTomorrow: [3],
+                caloriesTomorrow: [3],
                 proteinSetting: 120,
                 caloriesSetting: 2000,
                 weights: [2, 3],
                 dates: ["e", "f"],
             },
-            julia: {
-                proteinYesterday: 0,
-                caloriesYesterday: 0,
-                proteinToday: 0,
-                caloriesToday: 0,
-                proteinTomorrow: 0,
-                caloriesTomorrow: 0,
+            person2: {
+                proteinYesterday: [],
+                caloriesYesterday: [],
+                proteinToday: [],
+                caloriesToday: [],
+                proteinTomorrow: [],
+                caloriesTomorrow: [],
                 proteinSetting: 90,
                 caloriesSetting: 1500,
                 weights: [],
@@ -79,7 +79,7 @@ function loadData() {
     }
     // loading on next day -> today is becoming yesterday and tomorrow is becoming today
     else if (checkDateDifference(window.today, 1)) {
-        for (let name of ["louis", "julia"]) {
+        for (let name of ["person1", "person2"]) {
             let item = window.storage[name];
             item.proteinYesterday = item.proteinToday;
             item.caloriesYesterday = item.caloriesToday;
@@ -91,7 +91,7 @@ function loadData() {
     }
     // loading on any later date -> set everything to 0
     else {
-        for (let name of ["louis", "julia"]) {
+        for (let name of ["person1", "person2"]) {
             let item = window.storage[name];
             item.proteinYesterday = 0;
             item.caloriesYesterday = 0;
@@ -116,10 +116,49 @@ function saveData(saveStorage = true, saveReceipes = true) {
     }
 }
 
-function updateTracker(person) {
+function getPerson() {
+    return document.querySelector("input[name='person']:checked").value;
+}
+
+function updateTracker(person, refillTable) {
     const date = document.getElementById("dateSelector").value;
-    document.getElementById("remainingProtein").innerHTML = window.storage[person].proteinSetting - window.storage[person]["protein"+date];
-    document.getElementById("remainingCalories").innerHTML = window.storage[person].caloriesSetting - window.storage[person]["calories"+date];
+    const protein = window.storage[person]["protein"+date].reduce((acc, val) => acc + val, 0);
+    const calories = window.storage[person]["calories"+date].reduce((acc, val) => acc + val, 0);
+    document.getElementById("remainingProtein").innerHTML = window.storage[person].proteinSetting - protein;
+    document.getElementById("remainingCalories").innerHTML = window.storage[person].caloriesSetting - calories;
+    const table = document.getElementById("trackerTable");
+    const root = getComputedStyle(document.documentElement);
+    const lightColor = root.getPropertyValue('--lighter_color');
+    if (refillTable) {
+        table.getElementsByTagName("tbody")[0].innerHTML = "";
+        for (let day of ["Yesterday", "Today", "Tomorrow"]) {
+            const proteinList = window.storage[person]["protein"+day];
+            const calorieList = window.storage[person]["calories"+day];
+            const row = table.insertRow();
+            row.style.backgroundColor = lightColor;
+            const cell = row.insertCell(0);
+            cell.colSpan = 3;
+            cell.textContent = day;
+            for (let i = 0; i < proteinList.length; i++) {
+                const row = table.insertRow();
+                row.insertCell(0).textContent = proteinList[i];
+                row.insertCell(1).textContent = calorieList[i];
+            }
+        }
+    }
+    else {
+        let rowNum = 0;
+        for (let day of ["Yesterday", "Today", "Tomorrow"]) {
+            rowNum += window.storage[person]["protein"+day].length;
+            if (date === day) {
+                break;
+            }
+        }
+        const row = table.insertRow(rowNum);
+        const index = window.storage[person]["protein"+date].length - 1;
+        row.insertCell(0).textContent = window.storage[person]["protein"+date][index];
+        row.insertCell(1).textContent = window.storage[person]["calories"+date][index];
+    }
 }
 
 function updateWeight(person, updatePlot) {
@@ -137,11 +176,23 @@ function updateWeight(person, updatePlot) {
     }
 }
 
+function addTrackerValue() {
+    const protein = Number(document.getElementById("proteinInput").value());
+    const calories = Number(document.getElementById("caloriesInput").value());
+    // const amount = Number(document.getElementById("foodAmountInput").value());
+    // const name = document.getElementById("foodNameInput").value();
+    const person = getPerson();
+    const daySelect = document.getElementById("dateSelector").value();
+    window.storage[person]["protein" + daySelect].push(protein);
+    window.storage[person]["calories" + daySelect].push(calories);
+    updateTracker(person, false);
+}
+
 function pressPersonSelect() {
     const activeTab = document.querySelector('.tablink.active').value;
-    const person = document.querySelector("input[name='person']:checked").value;
+    const person = getPerson();
     if (activeTab === "tracker") {
-        updateTracker(person);
+        updateTracker(person, true);
     }
     else if (activeTab === "weight") {
         updateWeight(person, true);
@@ -153,15 +204,15 @@ function pressPersonSelect() {
 
 // first thing is load data from local storage
 loadData();
-updateTracker("louis");
-updateWeight("louis");
+updateTracker("person1", true);
+updateWeight("person1", false);
 
 const weightChart = new Chart(document.getElementById('scatter').getContext('2d'), {
     type: 'line',
     data: {
-        labels: window.storage.louis.dates,
+        labels: window.storage.person1.dates,
         datasets: [{
-            data: window.storage.louis.weights,
+            data: window.storage.person1.weights,
             borderWidth: 1
         }]
     },
@@ -181,38 +232,3 @@ const weightChart = new Chart(document.getElementById('scatter').getContext('2d'
         }
     }
 });
-
-// const table = document.getElementById("weightTable");
-
-// weightData.forEach(item => {
-//     const row = table.insertRow();
-//     row.insertCell(0).textContent = item.date;
-//     row.insertCell(1).textContent = item.weight;
-// });
-
-// const ctx = document.getElementById('scatter').getContext('2d');
-// const myChart = new Chart(ctx, {
-//     type: 'line',
-//     data: {
-//         labels: weightData.map(item => item.date),
-//         datasets: [{
-//             data: weightData.map(item => item.weight),
-//             borderWidth: 1
-//         }]
-//     },
-//     options: {
-//         plugins: {
-//             legend: {
-//                 display: false
-//             }
-//         },
-//         scales: {
-//             x: {
-//                 ticks: {
-//                     maxRotation: 60,
-//                     minRotation: 60
-//                 }
-//             }
-//         }
-//     }
-// });

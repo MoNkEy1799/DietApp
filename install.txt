@@ -1,0 +1,7 @@
+How to install the app:
+    1. Change label names for person1 and person2.
+    2. Activate developer options in android settings and enable USB-debugging.
+    3. Connect phone via USB to PC (install USB driver if necessary) and allow debugging.
+    4. Check if USB connection is set to data transfer.
+    5. Run 'run_install_server.bat'.
+    6. Go to localhost:8000 on phone and install app.
