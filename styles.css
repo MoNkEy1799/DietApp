@@ -79,6 +79,13 @@ body {
     border-radius: 5px;
 }
 
+.input-group:has(label:nth-of-type(2)) {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Ensures 4 equal columns */
+    gap: 10px;
+    border: 2px solid blue; /* Debugging */
+}
+
 .input-group input:focus, .input-group select:focus {
     border-color: var(--dark_accent);
     outline: none;
@@ -99,6 +106,38 @@ button {
 button:active {
     background-color: var(--light_accent);
     transform: scale(.98);
+}
+  
+.section-label {
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+  
+.arrow {
+    margin-right: 10px;
+    transform: rotate(-90deg);
+    transition: transform 0.3s ease;
+}
+  
+.expand-toggle {
+    display: none;
+}
+  
+.expand-toggle:checked ~ .expandable-content {
+    display: block;
+}
+  
+.expandable-content {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+}
+  
+.expand-toggle:checked ~ .section-label .arrow {
+    transform: rotate(0deg);
 }
 
 .full-width {
@@ -179,15 +218,25 @@ button:active {
     border-collapse: collapse;
     background-color: var(--background_color);
     margin: 20px 0;
+    table-layout: fixed;
 }
 
 [id*="Table"] th, [id*="Table"] td {
     padding: 12px;
     text-align: left;
     font-family: 'Arial', sans-serif;
+    height: 20px;
 }
 
-[id*="Table"] th:nth-child(2), [id*="Table"] td:nth-child(2) {
+[id*="Table"] th:nth-child(n+1):nth-child(-n+2), [id*="Table"] td:nth-child(n+1):nth-child(-n+2) {
+    width: 20%;
+}
+
+[id*="Table"] th:nth-child(2), [id*="Table"] td::nth-child(2) {
+    width: 60%;
+}
+
+[id*="Table"] th:nth-child(n+2):nth-child(-n+3), [id*="Table"] td:nth-child(n+2):nth-child(-n+3) {
     border-left: 2px solid var(--lighter_color);
 }
 

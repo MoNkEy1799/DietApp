@@ -23,7 +23,7 @@
         <button class="tablink active" onclick="openTab(event, 'Tracker')" value="tracker">Tracker</button>
         <button class="tablink" onclick="openTab(event, 'Foods')" value="foods">Foods</button>
         <button class="tablink" onclick="openTab(event, 'Weight')" value="weight">Weight</button>
-        <button class="tablink" onclick="openTab(event, 'HistorySettings')" value="settings">Settings</button>
+        <button class="tablink" onclick="openTab(event, 'Settings')" value="settings">Settings</button>
     </div>
     
     <div id="Tracker" class="tabcontent active">
@@ -31,7 +31,7 @@
 
         <div class="horizontal-line"></div>
         
-        <h3>Remaining for today:</h3>
+        <h3 id="remainHeader">Remaining For Today:</h3>
         <p>Protein: <span id="remainingProtein">--</span></p>
         <p>Calories: <span id="remainingCalories">--</span></p>
         
@@ -64,28 +64,39 @@
         <div class="date-button-container">
             <div class="input-group">
                 <label for="dateSelector">Date:</label>
-                <select id="dateSelector" >
+                <select id="dateSelector" onclick="updateTracker()">
                     <option value="Yesterday">Yesterday</option>
                     <option selected value="Today">Today</option>
                     <option value="Tomorrow">Tomorrow</option>
                 </select>
-                <button id="addButton">Add</button>
-                <button id="undoButton">Undo</button>
+                <button id="addButton" onclick="addTrackerValue()">Add</button>
+                <button id="undoButton" onclick="undoTracker()">Undo</button>
+            </div>
+        </div>
+
+        <div class="expandable-section">
+            <input type="checkbox" id="tracker-toggle" class="expand-toggle" onclick="fillTrackerTable()"/>
+            <label for="tracker-toggle" class="section-label">
+                <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Tracked Values
+            </label>
+            <div class="expandable-content">
+                <table id="trackerTable">
+                    <thead>
+                        <tr>
+                            <th>Protein</th>
+                            <th>Calories</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-
-    <table id="trackerTable">
-        <thead>
-            <tr>
-                <th>Protein</th>
-                <th>Calories</th>
-                <th>Type</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
     
     <div id="Foods" class="tabcontent">
         <h2>Add Food</h2>
@@ -108,28 +119,40 @@
         <div class="input-group">
             <label>Weight:</label>
             <input type="text" id="weightInput">
-            <button id="addWeightButton">Add</button>
+            <button id="addWeightButton" onclick="addWeightValue()">Add</button>
+            <button id="undoWeightButton" onclick="undoWeight()">Undo</button>
         </div>
         
         <div class="horizontal-line"></div>
-        
-        <table id="weightTable">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Weight</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+
+        <div class="expandable-section">
+            <input type="checkbox" id="weight-toggle" class="expand-toggle" onclick="fillWeightTable()"/>
+            <label for="weight-toggle" class="section-label">
+                <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Weight Values
+            </label>
+            <div class="expandable-content">
+                <table id="weightTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     
-    <div id="HistorySettings" class="tabcontent">
-        <h2>History & Settings</h2>
+    <div id="Settings" class="tabcontent">
+        <h2>Settings</h2>
 
         <div class="horizontal-line"></div>
-
+        
         <p>Enter daily amount of protein and calories.</p>
         <div class="input-group">
             <label>Protein:</label>
@@ -137,8 +160,29 @@
             <label>Calories:</label>
             <input type="text" id="dailyCalories">
         </div>
+        
+        <div class="horizontal-line"></div>
 
-        <p>Adjust preferences and app settings.</p>
+        <div class="expandable-section">
+            <input type="checkbox" id="settings-toggle" class="expand-toggle" onclick="fillSettingsTable()"/>
+            <label for="settings-toggle" class="section-label">
+                <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Command Execution History
+            </label>
+            <div class="expandable-content">
+                <table id="settingsTable">
+                    <thead>
+                        <tr>
+                            <th>Last 20 commands</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script src="app.js" defer></script>
