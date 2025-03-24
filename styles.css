@@ -79,20 +79,41 @@ body {
     border-radius: 5px;
 }
 
-.input-group:has(label:nth-of-type(2)) {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* Ensures 4 equal columns */
-    gap: 10px;
-    border: 2px solid blue; /* Debugging */
-}
-
 .input-group input:focus, .input-group select:focus {
-    border-color: var(--dark_accent);
+    border: 2px solid var(--dark_accent);
     outline: none;
 }
 
 .input-group button {
     margin-left: 10px;
+}
+
+.settings-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.settings-group button {
+    height: 40px;
+    font-size: 16px;
+}
+
+.settings-group input {
+    flex: 1;
+    min-width: 80px;
+    background-color: var(--lighter_color);
+    color: var(--text_color);
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid var(--lighter_color);
+    border-radius: 5px;
+}
+
+.settings-group input:focus {
+    border: 2px solid var(--dark_accent);
+    outline: none;
 }
 
 button {
@@ -115,7 +136,7 @@ button:active {
     display: flex;
     align-items: center;
 }
-  
+
 .arrow {
     margin-right: 10px;
     transform: rotate(-90deg);
@@ -159,6 +180,20 @@ button:active {
     width: 100%;
 }
 
+#saveButton {
+    align-items: center;
+    width: 100%;
+    padding: 8px 16px;
+    height: 40px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+#settingsInfo {
+    color: green;
+}
+
 .date-button-container button {
     margin-left: 10px;
     padding: 8px 16px;
@@ -166,13 +201,6 @@ button:active {
     flex: 1;
     border-radius: 5px;
     font-size: 16px;
-}
-
-.date-button-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-top: 10px;
 }
 
 .date-button-container label {
