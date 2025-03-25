@@ -69,8 +69,8 @@ function loadData() {
                 typesTomorrow: [],
                 proteinSetting: 120,
                 caloriesSetting: 2000,
-                weights: [90, 88, 86, 84],
-                dates: ["15.03.2025", "16.03.2025", "17.03.2025", "18.03.2025"],
+                weights: [],
+                dates: [],
             },
             person2: {
                 proteinYesterday: [],
@@ -338,12 +338,53 @@ function pressPersonSelect() {
     }
 }
 
-// remove pull-down refresh on mobile
-window.addEventListener('touchmove', function (e) {e.preventDefault();}, { passive: false });
-  
+function searchSuggestions(input) {
+    const searchInput = document.getElementById("foodNameInput");
+    const container = document.getElementById("suggestionsContainer");
+    const results = searchArray.filter(item => item.toLowerCase().includes(input.toLowerCase()));
+    container.innerHTML = "";
+    results.slice(0, 5).forEach(result => {
+        const element = document.createElement("div");
+        element.classList.add("suggestion");
+        element.textContent = result;
+        element.onclick = () => {
+            searchInput.value = result;
+            container.style.display = "none";
+        }
+        container.appendChild(element);
+    });
+    if (results.length > 0) {
+        container.style.display = "block";
+    }
+    else {
+        container.style.display = "none";
+    }
+}
+
 // first thing is load data from local storage
 loadData();
 updateTracker();
+const searchArray = [
+    "Apple",
+    "Banana",
+    "Grapes",
+    "Orange",
+    "Pineapple",
+    "Strawberry",
+    "Blueberry",
+    "Mango",
+    "Watermelon",
+    "Lemon"
+];
+document.getElementById("foodNameInput").addEventListener("input", () => {
+    const input = document.getElementById("foodNameInput").value;
+    if (input) {
+        searchSuggestions(input);
+    }
+    else {
+        document.getElementById("suggestionsContainer").style.display = "none";
+    }
+});
 
 const weightChart = new Chart(document.getElementById('scatter').getContext('2d'), {
     type: 'line',
