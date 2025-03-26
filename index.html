@@ -41,7 +41,6 @@
             <label>Protein:</label>
             <input type="number" id="proteinInput">
         </div>
-
         <div class="input-group">
             <label>Calories:</label>
             <input type="number" id="caloriesInput">
@@ -53,7 +52,6 @@
             <label>Amount:</label>
             <input type="number" id="foodAmountInput">
         </div>
-        
         <div class="input-group">
             <label>Food Name:</label>
             <input type="text" id="foodNameInput">
@@ -102,11 +100,30 @@
     </div>
     
     <div id="Foods" class="tabcontent">
-        <h2>Add Food</h2>
+        <h2>Add Foods and Receipes</h2>
 
         <div class="horizontal-line"></div>
         
-        <p>Enter new food items and their nutritional values.</p>
+        <p>Add new food item by inserting the protein and calories per 100g.</p>
+        <div class="input-group">
+            <label>Food Name:</label>
+            <input type="text" id="newFoodName">
+        </div>
+        <div class="input-group">
+            <label>Protein:</label>
+            <input type="text" id="newFoodProtein">
+        </div>
+        <div class="input-group">
+            <label>Calories:</label>
+            <input type="text" id="newFoodCalories">
+        </div>
+        <div class="settings-group">
+            <button id="addFoodButton">Add Food</button>
+            <button id="undoFoodButton">Undo</button>
+        </div>
+
+        <div class="horizontal-line"></div>
+
     </div>
     
     <div id="Weight" class="tabcontent">
@@ -120,9 +137,13 @@
         <div class="horizontal-line"></div>
 
         <div class="settings-group">
+            <label>Date:</label>
+            <input type="text" id="weightDate">
             <label>Weight:</label>
             <input type="text" id="weightInput">
-            <button id="addWeightButton" onclick="addWeightValue()">Add</button>
+        </div>
+        <div class="settings-group">
+            <button id="addWeightButton" onclick="addWeightValue()">Add Weight</button>
             <button id="undoWeightButton" onclick="undoWeight()">Undo</button>
         </div>
         
@@ -163,9 +184,16 @@
             <label>Calories:</label>
             <input type="text" id="dailyCalories">
         </div>
-        <button id="saveButton" onclick="changeSettings()">Save Settings</button>
+        <button class="saveButton" onclick="changeSettings()">Change Daily Settings</button>
         <p id="settingsInfo" hidden>Settings saved!</p>
         
+        <div class="horizontal-line"></div>
+
+        <div class="settings-group">
+            <button onclick="saveFile()">Save Data to File</button>
+            <button onclick="readFile()">Load Data from File</button>
+        </div>
+
         <div class="horizontal-line"></div>
 
         <div class="expandable-section">
