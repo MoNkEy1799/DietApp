@@ -12,6 +12,7 @@ body {
     color: var(--text_color);
     margin: 0;
     padding: 0;
+    overscroll-behavior-y: contain;
 }
 
 .tab-container {
@@ -196,7 +197,7 @@ button:active {
     color: green;
 }
 
-#weightInfo #nameInfo {
+#weightInfo, #newFoodInfo, #trackerInfo {
     color: rgb(196, 0, 0);
 }
 
@@ -247,7 +248,7 @@ button:active {
     display: none;
 }
 
-#suggestionsContainer {
+#suggestionsContainer, #removeContainer, #receipeContainer, #containerContainer {
     background-color: var(--lighter_color);
     color: var(--text_color);
     padding: 10px;
@@ -271,7 +272,7 @@ button:active {
     color: var(--text_color);
 }
 
-[id*="Table"] {
+table {
     width: 100%;
     border-collapse: collapse;
     background-color: var(--background_color);
@@ -279,26 +280,26 @@ button:active {
     table-layout: fixed;
 }
 
-[id*="Table"] th, [id*="Table"] td {
+th, td {
     padding: 12px;
     text-align: left;
     font-family: 'Arial', sans-serif;
     height: 20px;
 }
 
-[id*="Table"] th:nth-child(n+1):nth-child(-n+2), [id*="Table"] td:nth-child(n+1):nth-child(-n+2) {
+th:nth-child(n+1):nth-child(-n+2), td:nth-child(n+1):nth-child(-n+2) {
     width: 20%;
 }
 
-[id*="Table"] th:nth-child(2), [id*="Table"] td::nth-child(2) {
+th:nth-child(2), td::nth-child(2) {
     width: 60%;
 }
 
-[id*="Table"] th:nth-child(n+2):nth-child(-n+3), [id*="Table"] td:nth-child(n+2):nth-child(-n+3) {
+th:nth-child(n+2):nth-child(-n+3), td:nth-child(n+2):nth-child(-n+3) {
     border-left: 2px solid var(--lighter_color);
 }
 
-[id*="Table"] th {
+th {
     background-color: var(--dark_accent);
     color: var(--text_color);
     text-transform: uppercase;
