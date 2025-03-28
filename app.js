@@ -502,6 +502,7 @@ async function readFile() {
             window.receipes = loadedData.receipes;
             window.logs = loadedData.logs;
             saveData(saveStorage=true, saveReceipes=true, saveLogs=true);
+            window.alert(`Data was successfully loaded from '${file.name}'!`)
         }
         return;
     } catch (err) {
