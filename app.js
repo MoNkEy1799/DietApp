@@ -192,13 +192,13 @@ function addTrackerValue() {
         if (!name || !amount) {
             info.innerHTML = "Enter a name and amount!"
             info.hidden = false;
-            setTimeout(() => {document.getElementById("trackerInfo").hidden = true;}, 2000);
+            setTimeout(() => {info.hidden = true;}, 2000);
             return;
         }
         if (!(name in window.receipes)) {
             info.innerHTML = "Food name not found!"
             info.hidden = false;
-            setTimeout(() => {document.getElementById("trackerInfo").hidden = true;}, 2000);
+            setTimeout(() => {info.hidden = true;}, 2000);
             return;
         }
         protein = window.receipes[name].protein / 100 * amount;
@@ -208,7 +208,7 @@ function addTrackerValue() {
     else if (name || amount) {
         info.innerHTML = "Enter either a value or a food!";
         info.hidden = false;
-        setTimeout(() => {document.getElementById("trackerInfo").hidden = true;}, 2000);
+        setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
 
@@ -250,7 +250,7 @@ function updateTracker() {
     const date = document.getElementById("dateSelector").value;
     const sumProtein = window.storage[person]["protein"+date].reduce((acc, val) => acc + val, 0);
     const sumCalories = window.storage[person]["calories"+date].reduce((acc, val) => acc + val, 0);
-    document.getElementById("remainHeader").innerHTML = "Remaining For " + date + " :";
+    document.getElementById("remainHeader").innerHTML = "Remaining for " + date + " :";
     document.getElementById("remainingProtein").innerHTML = Math.round(window.storage[person].proteinSetting - sumProtein);
     document.getElementById("remainingCalories").innerHTML = Math.round(window.storage[person].caloriesSetting - sumCalories);
 }
@@ -297,13 +297,13 @@ function addNewFood() {
     if (!name) {
         info.innerHTML = "No Name given!"
         info.hidden = false;
-        setTimeout(() => {document.getElementById("weightInfo").hidden = true;}, 2000);
+        setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     else if (name in window.receipes) {
         info.innerHTML = "Name already exists!"
         info.hidden = false;
-        setTimeout(() => {document.getElementById("weightInfo").hidden = true;}, 2000);
+        setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     const proteinInput = document.getElementById("newFoodProtein");
@@ -313,7 +313,7 @@ function addNewFood() {
     if (!calories) {
         info.innerHTML = "No calories given!"
         info.hidden = false;
-        setTimeout(() => {document.getElementById("weightInfo").hidden = true;}, 2000);
+        setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     nameInput.value = "";
@@ -321,12 +321,25 @@ function addNewFood() {
     caloriesInput.value = "";
     window.receipes[name] = {"protein": protein, "calories": calories};
     saveData(saveStorage = false, saveReceipes = true, saveLogs = false);
-    logCommand(`Food: added new food/receipe. Name: ${name}, Protein: ${protein}, Calories: ${calories}`);
-    // updateWeight();
-    // window.weightTablePerson = undefined;
-    // if (document.getElementById("weight-toggle").checked) {
-    //     fillWeightTable();
-    // }
+    logCommand(`Food: added new food. Name: ${name}, Protein: ${protein}, Calories: ${calories}`);
+
+    const table = document.getElementById("foodListTable").getElementsByTagName("tbody")[0];
+    if (table.rows[0].cells[0] === "-") {
+        table.deleteRow(0);
+        table.rows[0].insertCell(0).textContent = name;
+    }
+    else {
+        const newRow = table.insertRow();
+        const cell = newRow.insertCell(0);
+        cell.textContent = text;
+        const rows = Array.from(table.rows);
+        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(text) > 0);
+        if (index === -1) {
+            table.appendChild(newRow);
+        } else {
+            table.insertBefore(newRow, rows[index]);
+        }
+    }
 }
 
 function undoNewFood() {
@@ -408,6 +421,11 @@ function fillWeightTable() {
     window.weightTablePerson = person;
     const table = document.getElementById("weightTable").getElementsByTagName("tbody")[0];
     table.innerHTML = "";
+    if (window.storage[person].weights.length === 0) {
+        const row = table.insertRow();
+        row.insertCell(0).textContent = "-";
+        row.insertCell(1).textContent = "-";
+    }
     for (let i = 0; i < window.storage[person].weights.length; i++) {
         const row = table.insertRow();
         row.insertCell(0).textContent = window.storage[person].dates[i];

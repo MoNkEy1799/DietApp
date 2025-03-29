@@ -6,7 +6,7 @@
     <title>Diet App</title>
     <link rel="stylesheet" href="styles.css">
     <!-- <link rel="manifest" href="manifest.json"/> -->
-    <link rel="icon" href="image.svg" />
+    <link rel="icon" href="image.svg"/>
     <script src="chart.js"></script>
 </head>
 <body>
@@ -31,31 +31,31 @@
 
         <div class="horizontal-line"></div>
         
-        <h3 id="remainHeader">Remaining For Today:</h3>
+        <h3 id="remainHeader">Remaining for Today:</h3>
         <p>Protein: <span id="remainingProtein">--</span></p>
         <p>Calories: <span id="remainingCalories">--</span></p>
         
         <div class="horizontal-line"></div>
 
         <div class="input-group">
-            <label>Protein:</label>
+            <label for="proteinInput">Protein:</label>
             <input type="number" id="proteinInput">
         </div>
         <div class="input-group">
-            <label>Calories:</label>
+            <label for="caloriesInput">Calories:</label>
             <input type="number" id="caloriesInput">
         </div>
         
         <div class="horizontal-line"></div>
 
         <div class="input-group">
-            <label>Amount:</label>
-            <input type="number" id="foodAmountInput">
-        </div>
-        <div class="input-group">
-            <label>Food Name:</label>
+            <label for="foodNameInput">Food:</label>
             <input type="text" id="foodNameInput">
             <div id="suggestionsContainer"></div>
+        </div>
+        <div class="input-group">
+            <label for="foodAmountInput">Amount:</label>
+            <input type="number" id="foodAmountInput">
         </div>
         <span id="trackerInfo" hidden>Enter either a value or a food!</span>
         
@@ -64,13 +64,12 @@
         <div class="date-button-container">
             <div class="input-group">
                 <label for="dateSelector">Date:</label>
-                <select id="dateSelector" onclick="updateTracker()">
+                <select id="dateSelector" onchange="updateTracker()">
                     <option value="Yesterday">Yesterday</option>
                     <option selected value="Today">Today</option>
                     <option value="Tomorrow">Tomorrow</option>
                 </select>
                 <button id="addButton" onclick="addTrackerValue()">Add</button>
-                <button id="undoButton" onclick="undoTracker()">Undo</button>
             </div>
         </div>
         
@@ -96,6 +95,9 @@
                     <tbody>
                     </tbody>
                 </table>
+                <div class="settings-group">
+                    <button id="undoFoodButton" onclick="undoTracker()">Remove Last Entry</button>
+                </div>
             </div>
         </div>
     </div>
@@ -104,83 +106,128 @@
         <h2>Add Foods and Receipes</h2>
 
         <div class="horizontal-line"></div>
-        
-        <p>Add new food item by inserting the protein and calories per 100g.</p>
-        <div class="input-group">
-            <label>Food Name:</label>
-            <input type="text" id="newFoodName">
-        </div>
-        <div class="input-group">
-            <label>Protein:</label>
-            <input type="number" id="newFoodProtein">
-        </div>
-        <div class="input-group">
-            <label>Calories:</label>
-            <input type="number" id="newFoodCalories">
-        </div>
-        <span id="newFoodInfo" hidden>Name already exists!</span>
-        <div class="settings-group">
-            <button id="addFoodButton" onclick="addNewFood()">Add Food</button>
+
+        <div class="expandable-section">
+            <input type="checkbox" id="food-toggle" class="expand-toggle"/>
+            <label for="food-toggle" class="section-label">
+                <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Add New Food
+            </label>
+            <div class="expandable-content">
+                <p>Add new food item by inserting the protein and calories per 100g.</p>
+                <div class="input-group">
+                    <label for="newFoodName">Name:</label>
+                    <input type="text" id="newFoodName">
+                </div>
+                <div class="input-group">
+                    <label for="newFoodProtein">Protein:</label>
+                    <input type="number" id="newFoodProtein">
+                </div>
+                <div class="input-group">
+                    <label for="newFoodCalories">Calories:</label>
+                    <input type="number" id="newFoodCalories">
+                </div>
+                <span id="newFoodInfo" hidden>Name already exists!</span>
+                <div class="settings-group">
+                    <button id="addFoodButton" onclick="addNewFood()">Add Food</button>
+                </div>
+            </div>
         </div>
         
         <div class="horizontal-line"></div>
 
-        <p>Create a new receipe with different foods.</p>
-        <div class="input-group">
-            <label>Amount:</label>
-            <input type="number" id="receipeAmountInput">
+        <div class="expandable-section">
+            <input type="checkbox" id="receipe-toggle" class="expand-toggle"/>
+            <label for="receipe-toggle" class="section-label">
+                <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Add New Receipe
+            </label>
+            <div class="expandable-content">
+                <p>Create a new receipe with different foods.</p>
+                <div class="input-group">
+                    <label for="receipeAmountInput">Amount:</label>
+                    <input type="number" id="receipeAmountInput">
+                </div>
+                <div class="input-group">
+                    <label for="toReceipeNameInput">Food Name:</label>
+                    <input type="text" id="toReceipeNameInput">
+                    <div id="receipeContainer"></div>
+                </div>
+                <div class="settings-group">
+                    <button id="addToReceipeButton">Add to Receipe</button>
+                </div>
+                <table id="receipeTable">
+                    <thead>
+                        <tr>
+                            <th>Food</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="input-group">
+                    <label for="receipeNameInput">Receipe Name:</label>
+                    <input type="number" id="receipeNameInput">
+                </div>
+                <div class="input-group">
+                    <label for="containerInput">Container:</label>
+                    <input type="text" id="containerInput">
+                    <div id="containerContainer"></div>
+                </div>
+                <div class="input-group">
+                    <label for="totalWeight">Total weight:</label>
+                    <input type="text" id="totalWeight">
+                </div>
+                <div class="settings-group">
+                    <button id="saveReceipeButton">Save receipe</button>
+                </div>
+            </div>
         </div>
-        <div class="input-group">
-            <label>Food Name:</label>
-            <input type="text" id="toReceipeNameInput">
-            <div id="receipeContainer"></div>
-        </div>
-        <div class="settings-group">
-            <button id="addToReceipeButton">Add to Receipe</button>
-        </div>
-        <table id="receipeTable">
+
+        <div class="horizontal-line"></div>
+
+        <table id="foodListTable">
             <thead>
                 <tr>
-                    <th>Food</th>
-                    <th>Amount</th>
+                    <th>Foods</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>-</td>
-                    <td>-</tr>
                 </tr>
             </tbody>
         </table>
-
+        <table id="receipeListTable">
+            <thead>
+                <tr>
+                    <th>Receipes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
         <div class="input-group">
-            <label>Receipe Name:</label>
-            <input type="number" id="receipeNameInput">
-        </div>
-        <div class="input-group">
-            <label>Container:</label>
-            <input type="text" id="containerInput">
-            <div id="containerContainer"></div>
-        </div>
-        <div class="input-group">
-            <label>Total weight:</label>
-            <input type="text" id="totalWeight">
-        </div>
-        <div class="settings-group">
-            <button id="saveReceipeButton">Save receipe</button>
-        </div>
-
-        <div class="horizontal-line"></div>
-
-        <div class="input-group">
-            <label>Food Name:</label>
+            <label for="removeInput">Remove Entry:</label>
             <input type="text" id="removeInput">
             <div id="removeContainer"></div>
         </div>
         <div class="settings-group">
-            <button id="undoFoodButton">Remove Food</button>
+            <button id="undoFoodButton">Remove Food/ Receipe</button>
         </div>
-
     </div>
     
     <div id="Weight" class="tabcontent">
@@ -189,20 +236,19 @@
         <div class="horizontal-line"></div>
 
         <p>Weight loss since start: <span id="weightLoss">--</span></p>
-        <canvas id="scatter" width="360" height="300" ></canvas>
+        <canvas id="scatter" width="360" height="200"></canvas>
 
         <div class="horizontal-line"></div>
 
         <div class="settings-group">
-            <label>Date:</label>
+            <label for="weightDate">Date:</label>
             <input type="text" id="weightDate" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
-            <label>Weight:</label>
+            <label for="weightInput">Weight:</label>
             <input type="number" id="weightInput">
         </div>
         <span id="weightInfo" hidden>Invalid date!</span>
         <div class="settings-group">
             <button id="addWeightButton" onclick="addWeightValue()">Add Weight</button>
-            <button id="undoWeightButton" onclick="undoWeight()">Undo</button>
         </div>
         
         <div class="horizontal-line"></div>
@@ -226,6 +272,9 @@
                     <tbody>
                     </tbody>
                 </table>
+                <div class="settings-group">
+                    <button id="undoWeightButton" onclick="undoWeight()">Remove Last Entry</button>
+                </div>
             </div>
         </div>
     </div>
@@ -237,9 +286,9 @@
         
         <p>Enter daily amount of protein and calories.</p>
         <div class="settings-group">
-            <label>Protein:</label>
+            <label for="dailyProtein">Protein:</label>
             <input type="text" id="dailyProtein">
-            <label>Calories:</label>
+            <label for="dailyCalories">Calories:</label>
             <input type="text" id="dailyCalories">
         </div>
         <button class="saveButton" onclick="changeSettings()">Change Daily Settings</button>

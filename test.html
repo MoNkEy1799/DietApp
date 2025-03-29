@@ -1,0 +1,43 @@
+<table id="myTable" border="1">
+    <tr>
+        <th>Name</th>
+        <th>Age</th>
+    </tr>
+    <tr>
+        <td>John</td>
+        <td class="cell">
+            <span>30</span>
+            <button class="delete-btn" onclick="removeRow(this)">×</button>
+        </td>
+    </tr>
+    <tr>
+        <td>Jane</td>
+        <td class="cell">
+            <span>25</span>
+            <button class="delete-btn" onclick="removeRow(this)">×</button>
+        </td>
+    </tr>
+</table>
+
+<style>
+    .cell {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .delete-btn {
+        background: none;
+        border: none;
+        color: red;
+        font-size: 12px;
+        cursor: pointer;
+        padding: 0;
+    }
+</style>
+
+<script>
+function removeRow(button) {
+    button.closest("tr").remove();
+}
+</script>
