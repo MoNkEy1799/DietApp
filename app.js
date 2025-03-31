@@ -52,6 +52,7 @@ function loadData() {
     window.today = new Date();
     window.storage = JSON.parse(localStorage.getItem("storage"));
     window.receipes = JSON.parse(localStorage.getItem("receipes"));
+    window.containers = JSON.parse(localStorage.getItem("containers"));
     window.logs = JSON.parse(localStorage.getItem("logs"));
     window.foodList = [];
     window.trackerTablePerson = undefined;
@@ -90,6 +91,51 @@ function loadData() {
     }
     if (window.receipes === null) {
         window.receipes = {};
+    }
+    if (window.containers === null) {
+        window.containers = {};
+    }
+    const foodTable = document.getElementById("foodListTable").getElementsByTagName("tbody")[0];
+    const receipeTable = document.getElementById("receipeListTable").getElementsByTagName("tbody")[0];
+    let table;
+    for (const [name, entry] of Object.entries(window.receipes)) {
+        if ("receipe" in entry) {
+            table = receipeTable;
+        }
+        else {
+            table = foodTable;
+        }
+        const newRow = table.insertRow();
+        const cell = newRow.insertCell(0);
+        const div = document.createElement("div");
+        const text = document.createElement("span");
+        const button = document.createElement("button");
+        div.classList.add("table-entry");
+        button.classList.add("table-entry-button");
+        button.innerHTML = "&times";
+        button.onclick = function () {
+            table.deleteRow(this.closest("tr").rowIndex - 1);
+            delete window.receipes[name];
+            saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
+        };
+        text.textContent = name;
+        div.appendChild(text);
+        div.appendChild(button);
+        cell.appendChild(div);
+    
+        const rows = Array.from(table.rows);
+        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
+        if (index === -1) {
+            table.appendChild(newRow);
+        } else {
+            table.insertBefore(newRow, rows[index]);
+        }
+    }
+    if (receipeTable.rows.length === 0) {
+        receipeTable.insertRow().insertCell(0).textContent = "-";
+    }
+    if (foodTable.rows.length === 0) {
+        foodTable.insertRow().insertCell(0).textContent = "-";
     }
     if (window.logs === null) {
         window.logs = [];
@@ -159,14 +205,14 @@ function loadData() {
     }
     // set the new date
     window.storage.today = dateToString(window.today);
-    saveData(saveStorage=true, saveReceipes=false, saveLogs=false);
+    saveData(saveStorage=true, saveReceipes=false, saveLogs=false, saveContainers = false);
     document.getElementById("dateDisplay").innerHTML = "<b>Today: </b>" + window.storage.today;
     document.getElementById("dailyProtein").placeholder = window.storage.person1.proteinSetting;
     document.getElementById("dailyCalories").placeholder = window.storage.person1.caloriesSetting;
     document.getElementById("weightDate").placeholder = window.storage.today;
 }
 
-function saveData(saveStorage = false, saveReceipes = false, saveLogs = false) {
+function saveData(saveStorage, saveReceipes, saveLogs, saveContainers) {
     if (saveStorage) {
         localStorage.setItem("storage", JSON.stringify(window.storage));
     }
@@ -175,6 +221,9 @@ function saveData(saveStorage = false, saveReceipes = false, saveLogs = false) {
     }
     if (saveLogs) {
         localStorage.setItem("logs", JSON.stringify(window.logs));
+    }
+    if (saveContainers) {
+        localStorage.setItem("containers", JSON.stringify(window.containers));
     }
 }
 
@@ -222,7 +271,7 @@ function addTrackerValue() {
     window.storage[person]["protein"+date].push(protein);
     window.storage[person]["calories"+date].push(calories);
     window.storage[person]["types"+date].push(type);
-    saveData(saveStorage=true, saveReceipes = false, saveLogs = false);
+    saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false);
     logCommand(`Tracker: added value for ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${protein}, Calories: ${calories}, Type: ${type}`);
     updateTracker();
     window.trackerTablePerson = undefined;
@@ -237,7 +286,7 @@ function undoTracker() {
     const protein = window.storage[person]["protein"+date].pop();
     const calories = window.storage[person]["calories"+date].pop();
     const type = window.storage[person]["types"+date].pop();
-    saveData(saveStorage=true, saveReceipes = false, saveLogs = false);
+    saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false);
     logCommand(`Tracker: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${protein}, Calories: ${calories}, Type: ${type}`);
     updateTracker();
     window.trackerTablePerson = undefined;
@@ -293,7 +342,7 @@ function fillTrackerTable() {
 
 function addNewFood() {
     const nameInput = document.getElementById("newFoodName");
-    const name = nameInput.value;
+    const name = nameInput.value.trim();
     const info = document.getElementById("newFoodInfo");
     if (!name) {
         info.innerHTML = "No Name given!"
@@ -321,26 +370,37 @@ function addNewFood() {
     proteinInput.value = "";
     caloriesInput.value = "";
     window.receipes[name] = {"protein": protein, "calories": calories};
-    saveData(saveStorage = false, saveReceipes = true, saveLogs = false);
+    saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
     logCommand(`Food: added new food. Name: ${name}, Protein: ${protein}, Calories: ${calories}`);
 
     const table = document.getElementById("foodListTable").getElementsByTagName("tbody")[0];
     if (table.rows[0].cells[0].textContent === "-") {
         table.deleteRow(0);
-        table.insertRow().insertCell(0).textContent = name;
-        console.log("insert");
     }
-    else {
-        const newRow = table.insertRow();
-        const cell = newRow.insertCell(0);
-        cell.textContent = name;
-        const rows = Array.from(table.rows);
-        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
-        if (index === -1) {
-            table.appendChild(newRow);
-        } else {
-            table.insertBefore(newRow, rows[index]);
-        }
+    const newRow = table.insertRow();
+    const cell = newRow.insertCell(0);
+    const div = document.createElement("div");
+    const text = document.createElement("span");
+    const button = document.createElement("button");
+    div.classList.add("table-entry");
+    button.classList.add("table-entry-button");
+    button.innerHTML = "&times";
+    button.onclick = function () {
+        table.deleteRow(this.closest("tr").rowIndex - 1);
+        delete window.receipes[name];
+        saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
+    };
+    text.textContent = name;
+    div.appendChild(text);
+    div.appendChild(button);
+    cell.appendChild(div);
+
+    const rows = Array.from(table.rows);
+    const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
+    if (index === -1) {
+        table.appendChild(newRow);
+    } else {
+        table.insertBefore(newRow, rows[index]);
     }
 }
 
@@ -363,26 +423,28 @@ function addToReceipe() {
     document.getElementById("receipeAmountInput").value = "";
     document.getElementById("toReceipeNameInput").value = "";
     window.foodList.push({"name": name, "amount": amount});
-    logCommand(`Receipe: added food ${name} with amount ${amount}`);
+    logCommand(`Receipe: added food. Name: ${name}, Amount: ${amount}`);
 
     const table = document.getElementById("receipeTable").getElementsByTagName("tbody")[0];
     if (table.rows[0].cells[0].textContent === "-") {
         table.deleteRow(0);
     }
-    table.insertRow().insertCell(0).textContent = `${amount}g ${name}`;
-}
-
-function undoNewFood() {
-    const person = getPerson();
-    const date = window.storage[person].dates.pop();
-    const weight = window.storage[person].weights.pop();
-    saveData(saveStorage = true, saveReceipes = false, saveLogs = false);
-    logCommand(`Weight: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML}. Weight: ${weight}, Date: ${date}`);
-    updateWeight();
-    window.weightTablePerson = undefined;
-    if (document.getElementById("weight-toggle").checked) {
-        fillWeightTable();
-    }
+    const cell = table.insertRow().insertCell(0);
+    const div = document.createElement("div");
+    const text = document.createElement("span");
+    const button = document.createElement("button");
+    div.classList.add("table-entry");
+    button.classList.add("table-entry-button");
+    button.innerHTML = "&times";
+    button.onclick = function () {
+        const rowIndex = this.closest("tr").rowIndex - 1;
+        table.deleteRow(rowIndex);
+        window.foodList.splice(rowIndex, 1);
+    };
+    text.textContent = `${amount}g ${name}`;
+    div.appendChild(text);
+    div.appendChild(button);
+    cell.appendChild(div);
 }
 
 function expandToggle(toggle) {
@@ -419,7 +481,7 @@ function addWeightValue() {
     const person = getPerson();
     window.storage[person].dates.push(date);
     window.storage[person].weights.push(weight);
-    saveData(saveStorage = true, saveReceipes = false, saveLogs = false);
+    saveData(saveStorage = true, saveReceipes = false, saveLogs = false, saveContainers = false);
     logCommand(`Weight: added value for ${document.querySelector(`label[for=${person}]`).innerHTML}. Date: ${date}, Weight: ${weight}`);
     updateWeight();
     window.weightTablePerson = undefined;
@@ -432,7 +494,7 @@ function undoWeight() {
     const person = getPerson();
     const date = window.storage[person].dates.pop();
     const weight = window.storage[person].weights.pop();
-    saveData(saveStorage=true, saveReceipes = false, saveLogs = false);
+    saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false, saveContainers = false);
     logCommand(`Weight: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML}. Weight: ${weight}, Date: ${date}`);
     updateWeight();
     window.weightTablePerson = undefined;
@@ -476,7 +538,7 @@ function logCommand(log) {
     if (window.logs.length > 20) {
         window.logs.pop();
     }
-    saveData(saveStorage = false, saveReceipes = false, saveLogs = true);
+    saveData(saveStorage = false, saveReceipes = false, saveLogs = true, saveContainers = false);
 }
 
 function changeSettings() {
@@ -487,7 +549,7 @@ function changeSettings() {
     calories = calories ? calories : window.storage[person].caloriesSetting;
     window.storage[person].proteinSetting = protein;
     window.storage[person].caloriesSetting = calories;
-    saveData(saveStorage = true, saveReceipes = false, saveLogs = false);
+    saveData(saveStorage = true, saveReceipes = false, saveLogs = false, saveContainers = false);
     logCommand(`Settings: changed dailys for ${document.querySelector(`label[for=${person}]`).innerHTML}. Protein: ${protein}, Calories: ${calories}`);
     const info = document.getElementById("settingsInfo");
     info.hidden = false;
@@ -574,7 +636,7 @@ async function readFile() {
             window.storage = loadedData.storage;
             window.receipes = loadedData.receipes;
             window.logs = loadedData.logs;
-            saveData(saveStorage=true, saveReceipes=true, saveLogs=true);
+            saveData(saveStorage=true, saveReceipes=true, saveLogs=true, saveContainers = true);
             window.alert(`Data was successfully loaded from '${file.name}'!`)
         }
         return;
@@ -589,16 +651,6 @@ updateTracker();
 document.getElementById("foodNameInput").addEventListener("input", () => {
     const input = document.getElementById("foodNameInput");
     const container = document.getElementById("suggestionsContainer");
-    if (input.value) {
-        searchSuggestions(input, container, Object.keys(window.receipes));
-    }
-    else {
-        container.style.display = "none";
-    }
-});
-document.getElementById("removeInput").addEventListener("input", () => {
-    const input = document.getElementById("removeInput");
-    const container = document.getElementById("removeContainer");
     if (input.value) {
         searchSuggestions(input, container, Object.keys(window.receipes));
     }

@@ -132,6 +132,26 @@ button:active {
     background-color: var(--light_accent);
     transform: scale(.98);
 }
+
+.table-entry {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.table-entry-button {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--lighter_color);
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+    color: rgb(196, 0, 0);
+}
   
 .section-label {
     cursor: pointer;
@@ -198,7 +218,7 @@ button:active {
     color: green;
 }
 
-#weightInfo, #newFoodInfo, #trackerInfo, #addFoodInfo {
+#weightInfo, #newFoodInfo, #trackerInfo, #addFoodInfo, #saveReceipeInfo {
     color: rgb(196, 0, 0);
 }
 
