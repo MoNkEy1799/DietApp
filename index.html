@@ -281,7 +281,25 @@
         <span id="settingsInfo" hidden>Settings saved!</span>
         
         <div class="horizontal-line"></div>
+        
+        <p>Add a new container for receipes.</p>
+        <div class="input-group">
+            <label for="containerNameInput">Name:</label>
+            <input type="text" id="containerNameInput">
+            <div id="containerContainer"></div>
+        </div>
+        <div class="input-group">
+            <label for="containerWeightInput">Weight:</label>
+            <input type="text" id="containerWeightInput">
+        </div>
+        <span id="saveContainerInfo" hidden>No name given!</span>
+        <div class="settings-group">
+            <button id="saveContainerButton">Save container</button>
+        </div>
+        
+        <div class="horizontal-line"></div>
 
+        <p>Save and load all stored data to a file.</p>
         <div class="settings-group">
             <button onclick="saveFile()">Save Data to File</button>
             <button onclick="readFile()">Load Data from File</button>

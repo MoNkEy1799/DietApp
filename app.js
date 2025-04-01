@@ -556,6 +556,53 @@ function changeSettings() {
     setTimeout(() => {info.hidden = true;}, 2000);
 }
 
+function addContainer() {
+    const amount = Number(document.getElementById("foodAmountInput").value);
+    const name = document.getElementById("foodNameInput").value;
+    const info = document.getElementById("trackerInfo");
+    let type = "Direct value input";
+    if (!(protein+calories)) {
+        if (!name || !amount) {
+            info.innerHTML = "Enter a name and amount!"
+            info.hidden = false;
+            setTimeout(() => {info.hidden = true;}, 2000);
+            return;
+        }
+        if (!(name in window.receipes)) {
+            info.innerHTML = "Food name not found!"
+            info.hidden = false;
+            setTimeout(() => {info.hidden = true;}, 2000);
+            return;
+        }
+        protein = window.receipes[name].protein / 100 * amount;
+        calories = window.receipes[name].calories / 100 * amount;
+        type = `${amount}g ${name}`;
+    }
+    else if (name || amount) {
+        info.innerHTML = "Enter either a value or a food!";
+        info.hidden = false;
+        setTimeout(() => {info.hidden = true;}, 2000);
+        return;
+    }
+
+    document.getElementById("proteinInput").value = "";
+    document.getElementById("caloriesInput").value = "";
+    document.getElementById("foodAmountInput").value = "";
+    document.getElementById("foodNameInput").value = "";
+    const person = getPerson();
+    const date = document.getElementById("dateSelector").value;
+    window.storage[person]["protein"+date].push(protein);
+    window.storage[person]["calories"+date].push(calories);
+    window.storage[person]["types"+date].push(type);
+    saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false);
+    logCommand(`Tracker: added value for ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${protein}, Calories: ${calories}, Type: ${type}`);
+    updateTracker();
+    window.trackerTablePerson = undefined;
+    if (document.getElementById("tracker-toggle").checked) {
+        fillTrackerTable();
+    }
+}
+
 function fillSettingsTable() {
     if (!document.getElementById("settings-toggle").checked) {
         return;
