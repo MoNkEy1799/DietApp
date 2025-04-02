@@ -213,7 +213,7 @@
                 </div>
                 <div class="input-group">
                     <label for="containerWeightInput">Weight:</label>
-                    <input type="text" id="containerWeightInput">
+                    <input type="number" id="containerWeightInput">
                 </div>
                 <span id="saveContainerInfo" hidden>No name given!</span>
                 <div class="settings-group">
@@ -318,9 +318,9 @@
         <p>Enter daily amount of protein and calories.</p>
         <div class="settings-group">
             <label for="dailyProtein">Protein:</label>
-            <input type="text" id="dailyProtein">
+            <input type="number" id="dailyProtein">
             <label for="dailyCalories">Calories:</label>
-            <input type="text" id="dailyCalories">
+            <input type="number" id="dailyCalories">
         </div>
         <button class="saveButton" onclick="changeSettings()">Change Daily Settings</button>
         <span id="settingsInfo" hidden>Settings saved!</span>
