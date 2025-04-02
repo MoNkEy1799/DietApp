@@ -813,7 +813,8 @@ async function saveFile() {
         const data = {
             "storage": window.storage,
             "receipes": window.receipes,
-            "logs": window.logs
+            "logs": window.logs,
+            "containers": window.containers
         };
         const writable = await fileHandle.createWritable();
         await writable.write(JSON.stringify(data));
@@ -835,6 +836,7 @@ async function readFile() {
             window.storage = loadedData.storage;
             window.receipes = loadedData.receipes;
             window.logs = loadedData.logs;
+            window.containers = loadedData.containers;
             saveData(saveStorage=true, saveReceipes=true, saveLogs=true, saveContainers = true);
             window.alert(`Data was successfully loaded from '${file.name}'!`)
         }
