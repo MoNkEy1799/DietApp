@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Diet App</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- <link rel="manifest" href="manifest.json"/> -->
+    <link rel="manifest" href="manifest.json"/>
     <link rel="icon" href="image.svg"/>
     <script src="chart.js"></script>
 </head>
@@ -176,7 +176,7 @@
 
                 <div class="input-group">
                     <label for="receipeNameInput">Name:</label>
-                    <input type="number" id="receipeNameInput">
+                    <input type="text" id="receipeNameInput">
                 </div>
                 <div class="input-group">
                     <label for="containerInput">Container:</label>
@@ -185,11 +185,11 @@
                 </div>
                 <div class="input-group">
                     <label for="totalWeight">Total weight:</label>
-                    <input type="text" id="totalWeight">
+                    <input type="number" id="totalWeight">
                 </div>
                 <span id="saveReceipeInfo" hidden>Invalid date!</span>
                 <div class="settings-group">
-                    <button id="saveReceipeButton">Save receipe</button>
+                    <button id="saveReceipeButton" onclick="addNewReceipe()">Save receipe</button>
                 </div>
             </div>
         </div>
@@ -224,7 +224,11 @@
 
         <div class="horizontal-line"></div>
 
-        <p>Jump to:</p>
+        <div class="settings-group">
+            <span><b>Jump to:</b></span>
+            <button onclick="scrollToTable('receipeListTable')">Receipes</button>
+            <button onclick="scrollToTable('containerListTable')">Containers</button>
+        </div>
 
         <div class="horizontal-line"></div>
 
@@ -354,10 +358,10 @@
     </div>
 
     <script src="app.js" defer></script>
-    <!-- <script>
+    <script>
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("sw.js");
         }
-    </script> -->
+    </script>
 </body>
 </html>
