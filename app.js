@@ -103,93 +103,8 @@ function loadData() {
         window.logs = [];
     }
 
-    // fill the food and receipe table with loaded data
-    const foodTable = document.getElementById("foodListTable").getElementsByTagName("tbody")[0];
-    const receipeTable = document.getElementById("receipeListTable").getElementsByTagName("tbody")[0];
-    let table, type;
-    for (const [name, entry] of Object.entries(window.receipes)) {
-        if ("receipe" in entry) {
-            table = receipeTable;
-            type = "receipe";
-        }
-        else {
-            table = foodTable;
-            type = "food";
-        }
-        const newRow = table.insertRow();
-        const cell = newRow.insertCell(0);
-        const div = document.createElement("div");
-        const text = document.createElement("span");
-        const button = document.createElement("button");
-        div.classList.add("table-entry");
-        button.classList.add("table-entry-button");
-        button.innerHTML = "&times";
-        button.onclick = function () {
-            const confirm = window.confirm(`Do you want to delete the ${type}: '${name}'?`)
-            if (confirm) {
-                table.deleteRow(this.closest("tr").rowIndex - 1);
-                delete window.receipes[name];
-                saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
-                logCommand(`${type.charAt(0).toUpperCase()+type.slice(1)}: removed. Name: ${name}, Protein: ${Math.round(entry.protein)}, Calories: ${Math.round(entry.calories)}`);
-            }
-        };
-        text.textContent = name;
-        div.appendChild(text);
-        div.appendChild(button);
-        cell.appendChild(div);
-    
-        const rows = Array.from(table.rows);
-        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
-        if (index === -1) {
-            table.appendChild(newRow);
-        } else {
-            table.insertBefore(newRow, rows[index]);
-        }
-    }
-    // insert '-' if table is empty
-    if (receipeTable.rows.length === 0) {
-        receipeTable.insertRow().insertCell(0).textContent = "-";
-    }
-    if (foodTable.rows.length === 0) {
-        foodTable.insertRow().insertCell(0).textContent = "-";
-    }
-
-    // fill container table
-    const containerTable = document.getElementById("containerListTable").getElementsByTagName("tbody")[0];
-    for (const name of Object.keys(window.containers)) {
-        const newRow = containerTable.insertRow();
-        const cell = newRow.insertCell(0);
-        const div = document.createElement("div");
-        const text = document.createElement("span");
-        const button = document.createElement("button");
-        div.classList.add("table-entry");
-        button.classList.add("table-entry-button");
-        button.innerHTML = "&times";
-        button.onclick = function () {
-            const confirm = window.confirm(`Do you want to delete the container: '${name}'?`)
-            if (confirm) {
-                containerTable.deleteRow(this.closest("tr").rowIndex - 1);
-                delete window.containers[name];
-                saveData(saveStorage = false, saveReceipes = false, saveLogs = false, saveContainers = true);
-                logCommand(`Container: removed. Name: ${name}, Weight: ${Math.round(window.containers[name])}`);
-            }
-        };
-        text.textContent = name;
-        div.appendChild(text);
-        div.appendChild(button);
-        cell.appendChild(div);
-    
-        const rows = Array.from(containerTable.rows);
-        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
-        if (index === -1) {
-            containerTable.appendChild(newRow);
-        } else {
-            containerTable.insertBefore(newRow, rows[index]);
-        }
-    }
-    if (containerTable.rows.length === 0) {
-        containerTable.insertRow().insertCell(0).textContent = "-";
-    }
+    // fill the food/receipe and container table with loaded data
+    fillReceipeContainerTable();
 
     // loading on same day --> keep data, do nothing
     if (checkDateDifference(window.today, 0)) {
@@ -569,6 +484,97 @@ function addNewReceipe() {
     }
 }
 
+function fillReceipeContainerTable() {
+    const foodTable = document.getElementById("foodListTable").getElementsByTagName("tbody")[0];
+    foodTable.innerHTML = "";
+    const receipeTable = document.getElementById("receipeListTable").getElementsByTagName("tbody")[0];
+    receipeTable.innerHTML = "";
+    let table, type;
+    for (const [name, entry] of Object.entries(window.receipes)) {
+        if ("receipe" in entry) {
+            table = receipeTable;
+            type = "receipe";
+        }
+        else {
+            table = foodTable;
+            type = "food";
+        }
+        const newRow = table.insertRow();
+        const cell = newRow.insertCell(0);
+        const div = document.createElement("div");
+        const text = document.createElement("span");
+        const button = document.createElement("button");
+        div.classList.add("table-entry");
+        button.classList.add("table-entry-button");
+        button.innerHTML = "&times";
+        button.onclick = function () {
+            const confirm = window.confirm(`Do you want to delete the ${type}: '${name}'?`)
+            if (confirm) {
+                table.deleteRow(this.closest("tr").rowIndex - 1);
+                delete window.receipes[name];
+                saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
+                logCommand(`${type.charAt(0).toUpperCase()+type.slice(1)}: removed. Name: ${name}, Protein: ${Math.round(entry.protein)}, Calories: ${Math.round(entry.calories)}`);
+            }
+        };
+        text.textContent = name;
+        div.appendChild(text);
+        div.appendChild(button);
+        cell.appendChild(div);
+    
+        const rows = Array.from(table.rows);
+        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
+        if (index === -1) {
+            table.appendChild(newRow);
+        } else {
+            table.insertBefore(newRow, rows[index]);
+        }
+    }
+    // insert '-' if table is empty
+    if (receipeTable.rows.length === 0) {
+        receipeTable.insertRow().insertCell(0).textContent = "-";
+    }
+    if (foodTable.rows.length === 0) {
+        foodTable.insertRow().insertCell(0).textContent = "-";
+    }
+
+    // fill container table
+    const containerTable = document.getElementById("containerListTable").getElementsByTagName("tbody")[0];
+    for (const name of Object.keys(window.containers)) {
+        const newRow = containerTable.insertRow();
+        const cell = newRow.insertCell(0);
+        const div = document.createElement("div");
+        const text = document.createElement("span");
+        const button = document.createElement("button");
+        div.classList.add("table-entry");
+        button.classList.add("table-entry-button");
+        button.innerHTML = "&times";
+        button.onclick = function () {
+            const confirm = window.confirm(`Do you want to delete the container: '${name}'?`)
+            if (confirm) {
+                containerTable.deleteRow(this.closest("tr").rowIndex - 1);
+                delete window.containers[name];
+                saveData(saveStorage = false, saveReceipes = false, saveLogs = false, saveContainers = true);
+                logCommand(`Container: removed. Name: ${name}, Weight: ${Math.round(window.containers[name])}`);
+            }
+        };
+        text.textContent = name;
+        div.appendChild(text);
+        div.appendChild(button);
+        cell.appendChild(div);
+    
+        const rows = Array.from(containerTable.rows);
+        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
+        if (index === -1) {
+            containerTable.appendChild(newRow);
+        } else {
+            containerTable.insertBefore(newRow, rows[index]);
+        }
+    }
+    if (containerTable.rows.length === 0) {
+        containerTable.insertRow().insertCell(0).textContent = "-";
+    }
+}
+
 function expandToggle(toggle) {
     if (toggle === "food") {
         document.getElementById("receipe-toggle").checked = false;
@@ -840,7 +846,7 @@ async function readFile() {
             saveData(saveStorage=true, saveReceipes=true, saveLogs=true, saveContainers = true);
             window.alert(`Data was successfully loaded from '${file.name}'!`)
         }
-        return;
+        fillReceipeContainerTable();
     } catch (err) {
         window.alert(`File reading failed due to the following error: ${err}`);
     }
