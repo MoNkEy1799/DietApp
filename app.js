@@ -539,6 +539,7 @@ function fillReceipeContainerTable() {
 
     // fill container table
     const containerTable = document.getElementById("containerListTable").getElementsByTagName("tbody")[0];
+    containerTable.innerHTML = "";
     for (const name of Object.keys(window.containers)) {
         const newRow = containerTable.insertRow();
         const cell = newRow.insertCell(0);
