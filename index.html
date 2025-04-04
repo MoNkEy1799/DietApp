@@ -49,13 +49,13 @@
         <div class="horizontal-line"></div>
 
         <div class="input-group">
+            <label for="foodAmountInput">Amount:</label>
+            <input type="number" id="foodAmountInput">
+        </div>
+        <div class="input-group">
             <label for="foodNameInput">Food:</label>
             <input type="text" id="foodNameInput" onblur="hideSuggestions('suggestionsContainer')">
             <div id="suggestionsContainer"></div>
-        </div>
-        <div class="input-group">
-            <label for="foodAmountInput">Amount:</label>
-            <input type="number" id="foodAmountInput">
         </div>
         <span id="trackerInfo" hidden>Enter either a value or a food!</span>
         
