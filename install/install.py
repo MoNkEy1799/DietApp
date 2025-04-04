@@ -2,10 +2,10 @@ import subprocess
 import re
 
 print("Starting ADB server for port forwarding.")
-subprocess.run(["sdk_platform_tools/adb.exe", "start-server"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+subprocess.run(["install/sdk_platform_tools/adb.exe", "start-server"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 # check if a device is successfully connected via usb
-result = subprocess.run(["sdk_platform_tools/adb.exe", "devices"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+result = subprocess.run(["install/sdk_platform_tools/adb.exe", "devices"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 device_found = False
 for line in result.stdout.splitlines():
     tokens = line.decode().split()
@@ -25,8 +25,8 @@ if not device_found:
 
 # port forwarding
 print("Device connected and authorized.")
-subprocess.run(["sdk_platform_tools/adb.exe", "reverse", "tcp:8000", "tcp:8000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-subprocess.run(["sdk_platform_tools/adb.exe", "reverse", "--list"], capture_output=True, text=True)
+subprocess.run(["install/sdk_platform_tools/adb.exe", "reverse", "tcp:8000", "tcp:8000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+subprocess.run(["install/sdk_platform_tools/adb.exe", "reverse", "--list"], capture_output=True, text=True)
 
 # add new cache version such that old caches get deleted on activate
 with open("sw.js", "r") as file:
