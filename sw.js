@@ -3,9 +3,9 @@ const CACHE_ASSETS = [
     "/",
     "/manifest.json",
     "/index.html",
-    "/styles.css",
-    "/app.js",
-    "/chart.js"
+    "/js_css/styles.css",
+    "/js_css/app.js",
+    "/js_css/chart.js"
 ];
 
 self.addEventListener("install", (event) => {
