@@ -50,7 +50,7 @@
 
         <div class="input-group">
             <label for="foodNameInput">Food:</label>
-            <input type="text" id="foodNameInput">
+            <input type="text" id="foodNameInput" onblur="hideSuggestions('suggestionsContainer')">
             <div id="suggestionsContainer"></div>
         </div>
         <div class="input-group">
@@ -154,7 +154,7 @@
                 </div>
                 <div class="input-group">
                     <label for="toReceipeNameInput">Food:</label>
-                    <input type="text" id="toReceipeNameInput">
+                    <input type="text" id="toReceipeNameInput" onblur="hideSuggestions('receipeContainer')">
                     <div id="receipeContainer"></div>
                 </div>
                 <span id="addFoodInfo" hidden>Invalid date!</span>
@@ -180,7 +180,7 @@
                 </div>
                 <div class="input-group">
                     <label for="containerInput">Container:</label>
-                    <input type="text" id="containerInput">
+                    <input type="text" id="containerInput" onblur="hideSuggestions('containerContainer')">
                     <div id="containerContainer"></div>
                 </div>
                 <div class="input-group">
