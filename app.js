@@ -182,9 +182,9 @@ function loadData() {
         const rows = Array.from(containerTable.rows);
         const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
         if (index === -1) {
-            table.appendChild(newRow);
+            containerTable.appendChild(newRow);
         } else {
-            table.insertBefore(newRow, rows[index]);
+            containerTable.insertBefore(newRow, rows[index]);
         }
     }
     if (containerTable.rows.length === 0) {
