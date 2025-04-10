@@ -128,6 +128,8 @@ function loadData() {
     window.storage.today = dateToString(window.today);
     saveData(saveStorage=true);
     document.getElementById("dateDisplay").innerHTML = "<b>Today: </b>" + window.storage.today;
+    document.getElementById("dailyProtein").placeholder = window.storage.person1.proteinSetting;
+    document.getElementById("dailyCalories").placeholder = window.storage.person1.caloriesSetting;
 }
 
 function saveData(saveStorage = false, saveReceipes = false, saveLogs = false) {
@@ -295,6 +297,18 @@ function logCommand(log) {
     saveData(saveLogs=true);
 }
 
+function changeSettings() {
+    const person = getPerson();
+    const protein = Number(document.getElementById("dailyProtein").value);
+    const calories = Number(document.getElementById("dailyCalories").value);
+    window.storage[person].proteinSetting = protein;
+    window.storage[person].caloriesSetting = calories;
+    saveData(saveStorage=true);
+    logCommand(`Settings: changed dailys for ${document.querySelector(`label[for=${person}]`).innerHTML}. Protein: ${protein}, Calories: ${calories}`);
+    document.getElementById("settingsInfo").hidden = false;
+    setTimeout(() => {document.getElementById("settingsInfo").hidden = true;}, 2000);
+}
+
 function fillSettingsTable() {
     if (!document.getElementById("settings-toggle").checked) {
         return;
@@ -318,7 +332,9 @@ function pressPersonSelect() {
         document.getElementById("weight-toggle").checked = false;
     }
     else if (activeTab === "settings") {
-        
+        const person = getPerson();
+        document.getElementById("dailyProtein").placeholder = window.storage[person].proteinSetting;
+        document.getElementById("dailyCalories").placeholder = window.storage[person].caloriesSetting;
     }
 }
 

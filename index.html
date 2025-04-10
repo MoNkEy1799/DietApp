@@ -73,6 +73,8 @@
                 <button id="undoButton" onclick="undoTracker()">Undo</button>
             </div>
         </div>
+        
+        <div class="horizontal-line"></div>
 
         <div class="expandable-section">
             <input type="checkbox" id="tracker-toggle" class="expand-toggle" onclick="fillTrackerTable()"/>
@@ -116,7 +118,7 @@
 
         <div class="horizontal-line"></div>
 
-        <div class="input-group">
+        <div class="settings-group">
             <label>Weight:</label>
             <input type="text" id="weightInput">
             <button id="addWeightButton" onclick="addWeightValue()">Add</button>
@@ -154,12 +156,14 @@
         <div class="horizontal-line"></div>
         
         <p>Enter daily amount of protein and calories.</p>
-        <div class="input-group">
+        <div class="settings-group">
             <label>Protein:</label>
             <input type="text" id="dailyProtein">
             <label>Calories:</label>
             <input type="text" id="dailyCalories">
         </div>
+        <button id="saveButton" onclick="changeSettings()">Save Settings</button>
+        <p id="settingsInfo" hidden>Settings saved!</p>
         
         <div class="horizontal-line"></div>
 
