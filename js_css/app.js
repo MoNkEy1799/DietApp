@@ -165,9 +165,9 @@ function loadData() {
     window.storage.today = dateToString(window.today);
     saveData(saveStorage=true, saveReceipes=false, saveLogs=false, saveContainers = false);
     document.getElementById("dateDisplay").innerHTML = "<b>Today: </b>" + window.storage.today;
+    document.getElementById("weightDate").placeholder = window.storage.today;
     document.getElementById("dailyProtein").placeholder = window.storage.person1.proteinSetting;
     document.getElementById("dailyCalories").placeholder = window.storage.person1.caloriesSetting;
-    document.getElementById("weightDate").placeholder = window.storage.today;
 }
 
 function saveData(saveStorage, saveReceipes, saveLogs, saveContainers) {
@@ -993,7 +993,18 @@ function showSettingsPrompt(file) {
             const text = await file.text();
             const loadedData = JSON.parse(text);
             window.storage = loadedData.storage;
-            window.storage.today = dateToString(window.today);
+            if (window.storage.today !== dateToString(window.today)) {
+                const confirm = window.confirm(`Loaded date (${window.storage.today}) is not the same as current date. Do you want to overwrite the current date?`)
+                if (confirm) {
+                    // date already overwritten -> need to change placeholder values
+                    document.getElementById("dateDisplay").innerHTML = "<b>Today: </b>" + window.storage.today;
+                    document.getElementById("weightDate").placeholder = window.storage.today;
+                }
+                else {
+                    // do not overwrite with saved data -> need to set storage back to correct date
+                    window.storage.today = dateToString(window.today);
+                }
+            }
             window.receipes = loadedData.receipes;
             window.logs = loadedData.logs;
             window.containers = loadedData.containers;
