@@ -53,6 +53,7 @@ function loadData() {
     window.storage = JSON.parse(localStorage.getItem("storage"));
     window.receipes = JSON.parse(localStorage.getItem("receipes"));
     window.logs = JSON.parse(localStorage.getItem("logs"));
+    window.foodList = [];
     window.trackerTablePerson = undefined;
     window.weightTablePerson = undefined;
     if (window.storage === null) {
@@ -324,22 +325,51 @@ function addNewFood() {
     logCommand(`Food: added new food. Name: ${name}, Protein: ${protein}, Calories: ${calories}`);
 
     const table = document.getElementById("foodListTable").getElementsByTagName("tbody")[0];
-    if (table.rows[0].cells[0] === "-") {
+    if (table.rows[0].cells[0].textContent === "-") {
         table.deleteRow(0);
-        table.rows[0].insertCell(0).textContent = name;
+        table.insertRow().insertCell(0).textContent = name;
+        console.log("insert");
     }
     else {
         const newRow = table.insertRow();
         const cell = newRow.insertCell(0);
-        cell.textContent = text;
+        cell.textContent = name;
         const rows = Array.from(table.rows);
-        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(text) > 0);
+        const index = rows.findIndex(row => row.cells[0].textContent.localeCompare(name) > 0);
         if (index === -1) {
             table.appendChild(newRow);
         } else {
             table.insertBefore(newRow, rows[index]);
         }
     }
+}
+
+function addToReceipe() {
+    const amount = Number(document.getElementById("receipeAmountInput").value);
+    const name = document.getElementById("toReceipeNameInput").value;
+    const info = document.getElementById("addFoodInfo");
+    if (!name || !amount) {
+        info.innerHTML = "Enter a name and amount!"
+        info.hidden = false;
+        setTimeout(() => {info.hidden = true;}, 2000);
+        return;
+    }
+    if (!(name in window.receipes)) {
+        info.innerHTML = "Food name not found!"
+        info.hidden = false;
+        setTimeout(() => {info.hidden = true;}, 2000);
+        return;
+    }
+    document.getElementById("receipeAmountInput").value = "";
+    document.getElementById("toReceipeNameInput").value = "";
+    window.foodList.push({"name": name, "amount": amount});
+    logCommand(`Receipe: added food ${name} with amount ${amount}`);
+
+    const table = document.getElementById("receipeTable").getElementsByTagName("tbody")[0];
+    if (table.rows[0].cells[0].textContent === "-") {
+        table.deleteRow(0);
+    }
+    table.insertRow().insertCell(0).textContent = `${amount}g ${name}`;
 }
 
 function undoNewFood() {
@@ -353,6 +383,14 @@ function undoNewFood() {
     if (document.getElementById("weight-toggle").checked) {
         fillWeightTable();
     }
+}
+
+function expandToggle(toggle) {
+    if (toggle === "receipe") {
+        document.getElementById("food-toggle").checked = false;
+        return;
+    }
+    document.getElementById("receipe-toggle").checked = false;
 }
 
 function addWeightValue() {
@@ -463,8 +501,7 @@ function fillSettingsTable() {
     const table = document.getElementById("settingsTable").getElementsByTagName("tbody")[0];
     table.innerHTML = "";
     for (let i = 0; i < window.logs.length; i++) {
-        const row = table.insertRow();
-        row.insertCell(0).textContent = window.logs[i];
+        table.insertRow().insertCell(0).textContent = window.logs[i];
     }
 }
 

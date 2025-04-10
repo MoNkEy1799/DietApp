@@ -198,7 +198,7 @@ button:active {
     color: green;
 }
 
-#weightInfo, #newFoodInfo, #trackerInfo {
+#weightInfo, #newFoodInfo, #trackerInfo, #addFoodInfo {
     color: rgb(196, 0, 0);
 }
 

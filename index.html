@@ -108,7 +108,7 @@
         <div class="horizontal-line"></div>
 
         <div class="expandable-section">
-            <input type="checkbox" id="food-toggle" class="expand-toggle"/>
+            <input type="checkbox" id="food-toggle" class="expand-toggle" onclick="expandToggle('food')"/>
             <label for="food-toggle" class="section-label">
                 <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
                     <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -139,7 +139,7 @@
         <div class="horizontal-line"></div>
 
         <div class="expandable-section">
-            <input type="checkbox" id="receipe-toggle" class="expand-toggle"/>
+            <input type="checkbox" id="receipe-toggle" class="expand-toggle" onclick="expandToggle('receipe')"/>
             <label for="receipe-toggle" class="section-label">
                 <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
                     <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -153,32 +153,27 @@
                     <input type="number" id="receipeAmountInput">
                 </div>
                 <div class="input-group">
-                    <label for="toReceipeNameInput">Food Name:</label>
+                    <label for="toReceipeNameInput">Food:</label>
                     <input type="text" id="toReceipeNameInput">
                     <div id="receipeContainer"></div>
                 </div>
+                <span id="addFoodInfo" hidden>Invalid date!</span>
                 <div class="settings-group">
-                    <button id="addToReceipeButton">Add to Receipe</button>
+                    <button id="addToReceipeButton" onclick="addToReceipe()">Add to Receipe</button>
                 </div>
                 <table id="receipeTable">
                     <thead>
                         <tr>
-                            <th>Food</th>
-                            <th>Amount</th>
+                            <th>Foods in Receipe</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>-</td>
-                            <td>-</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <div class="input-group">
-                    <label for="receipeNameInput">Receipe Name:</label>
-                    <input type="number" id="receipeNameInput">
-                </div>
                 <div class="input-group">
                     <label for="containerInput">Container:</label>
                     <input type="text" id="containerInput">
@@ -187,6 +182,10 @@
                 <div class="input-group">
                     <label for="totalWeight">Total weight:</label>
                     <input type="text" id="totalWeight">
+                </div>
+                <div class="input-group">
+                    <label for="receipeNameInput">Name:</label>
+                    <input type="number" id="receipeNameInput">
                 </div>
                 <div class="settings-group">
                     <button id="saveReceipeButton">Save receipe</button>
