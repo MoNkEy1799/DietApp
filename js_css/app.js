@@ -42,7 +42,7 @@ function stringToDate(string) {
 }
 
 function checkDateDifference(date, diff) {
-    date.setDate(date.getDate() - diff);
+    date.setDate(date.getDate() + diff);
     return date.getDate() === window.today.getDate() &&
            date.getMonth() === window.today.getMonth() &&
            date.getFullYear() == window.today.getFullYear();
@@ -110,31 +110,52 @@ function loadData() {
     // fill the food/receipe and container table with loaded data
     fillReceipeContainerTable();
 
-    // loading on same day --> keep data, do nothing
-    if (checkDateDifference(window.today, 0)) {
+    // loading on same day --> do nothing
+    if (checkDateDifference(stringToDate(window.storage.today), 0)) {
     }
     // loading on next day -> today is becoming yesterday and tomorrow is becoming today
-    else if (checkDateDifference(window.today, 1)) {
+    else if (checkDateDifference(stringToDate(window.storage.today), 1)) {
         for (let name of ["person1", "person2"]) {
             let item = window.storage[name];
             item.proteinYesterday = item.proteinToday;
             item.caloriesYesterday = item.caloriesToday;
+            item.typesYesterday = item.typesToday;
             item.proteinToday = item.proteinTomorrow;
             item.caloriesToday = item.caloriesTomorrow;
-            item.proteinTomorrow = 0;
-            item.caloriesTomorrow = 0;
+            item.typesToday = item.typesTomorrow;
+            item.proteinTomorrow = [];
+            item.caloriesTomorrow = [];
+            item.typesTomorrow = [];
         }
     }
-    // loading on any later date -> set everything to 0
+    // load two days later -> tomorrow is becoming yesterday
+    else if (checkDateDifference(stringToDate(window.storage.today), 2)) {
+        for (let name of ["person1", "person2"]) {
+            let item = window.storage[name];
+            item.proteinYesterday = item.proteinTomorrow;
+            item.caloriesYesterday = item.caloriesTomorrow;
+            item.typesYesterday = item.typesTomorrow;
+            item.proteinToday = [];
+            item.caloriesToday = [];
+            item.typesToday = [];
+            item.proteinTomorrow = [];
+            item.caloriesTomorrow = [];
+            item.typesTomorrow = [];
+        }
+    }
+    // loading on any later date -> reset everything
     else {
         for (let name of ["person1", "person2"]) {
             let item = window.storage[name];
-            item.proteinYesterday = 0;
-            item.caloriesYesterday = 0;
-            item.proteinToday = 0;
-            item.caloriesToday = 0;
-            item.proteinTomorrow = 0;
-            item.caloriesTomorrow = 0;
+            item.proteinYesterday = [];
+            item.caloriesYesterday = [];
+            item.typesYesterday = [];
+            item.proteinToday = [];
+            item.caloriesToday = [];
+            item.typesToday = [];
+            item.proteinTomorrow = [];
+            item.caloriesTomorrow = [];
+            item.typesTomorrow = [];
         }
     }
 
