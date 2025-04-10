@@ -16,6 +16,8 @@ if not defined DEVICE_FOUND (
 )
 echo Device connected and authorized.
 sdk_platform_tools\adb.exe reverse tcp:8000 tcp:8000 > nul 2>&1
+echo Port forwarding:
+sdk_platform_tools\adb.exe reverse --list
 
 echo Install app under: localhost:8000
 python -m http.server 8000
