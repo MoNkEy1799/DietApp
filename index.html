@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nutrition Tracker</title>
+    <script src="chart.js"></script>
+    <style>
+        :root {
+            --background_color: #2a2a2c;
+            --lighter_color: #3b3b3e;
+            --text_color: #d7d7d7;
+            --dark_accent: #28344f;
+            --light_accent: #2e4065;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background_color);
+            color: var(--text_color);
+            margin: 0;
+            padding: 0;
+        }
+        .tab-container {
+            display: flex;
+            background-color: var(--background_color);
+            padding: 10px;
+        }
+        .tablink {
+            flex: 1;
+            background-color: var(--lighter_color);
+            color: var(--text_color);
+            padding: 15px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 0;
+        }
+        .tablink:first-child {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+        .tablink:last-child {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+        .tablink.active {
+            background-color: var(--dark_accent);
+        }
+        .tabcontent {
+            display: none;
+            margin-top: -20px;
+            padding: 20px;
+        }
+        .active {
+            display: block;
+        }
+        .input-group {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .input-group label {
+            flex: 1;
+            color: var(--text_color);
+        }
+        .input-group input, .input-group select {
+            flex: 2;
+            background-color: var(--lighter_color);
+            color: var(--text_color);
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid var(--lighter_color);
+            border-radius: 5px;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--dark_accent);
+            outline: none;
+        }
+        button {
+            background-color: var(--dark_accent);
+            color: var(--text_color);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: var(--light_accent);
+        }
+        .full-width {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .horizontal-line {
+            width: 100%;
+            height: 1px;
+            background-color: var(--lighter_color);
+            margin: 20px 0;
+        }
+        .date-button-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .date-button-container label {
+            margin-right: 10px;
+        }
+        .date-button-container select {
+            flex: 1;
+            width: auto;
+        }
+        #personSelectorContainer {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            background-color: var(--background_color);
+            border-radius: 5px;
+        }
+        #personSelectorContainer label {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            background-color: var(--lighter_color);
+            color: var(--text_color);
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 0 5px;
+        }
+        #personSelectorContainer input[type="radio"]:checked + label {
+            background-color: var(--dark_accent);
+        }
+        #personSelectorContainer input[type="radio"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="personSelectorContainer">
+        <input type="radio" id="personL" name="person" value="L" checked>
+        <label for="personL">Louis</label>
+
+        <input type="radio" id="personJ" name="person" value="J">
+        <label for="personJ">Julia</label>
+    </div>
+
+    <div class="tab-container">
+        <button class="tablink active" onclick="openTab(event, 'Tracker')">Tracker</button>
+        <button class="tablink" onclick="openTab(event, 'AddFood')">Foods</button>
+        <button class="tablink" onclick="openTab(event, 'Weight')">Weight</button>
+        <button class="tablink" onclick="openTab(event, 'HistorySettings')">Settings</button>
+    </div>
+    
+    <div id="Tracker" class="tabcontent active">
+        <h2>Daily Nutrition Tracker</h2>
+
+        <div class="horizontal-line"></div>
+
+        <div class="input-group">
+            <label>Protein:</label>
+            <input type="number" id="proteinInput">
+        </div>
+
+        <div class="input-group">
+            <label>Calories:</label>
+            <input type="number" id="kcalInput">
+        </div>
+        
+        <div class="horizontal-line"></div>
+
+        <div class="input-group">
+            <label>Amount:</label>
+            <input type="number" id="foodAmountInput">
+        </div>
+        
+        <div class="input-group">
+            <label>Food Name:</label>
+            <input type="text" id="foodNameInput">
+        </div>
+        
+        <div class="horizontal-line"></div>
+        
+        <div class="date-button-container">
+            <div class="input-group">
+                <label for="dateSelector">Date:</label>
+                <select id="dateSelector">
+                    <option>Today</option>
+                    <option>Tomorrow</option>
+                </select>
+            </div>
+            <button id="addButton">Add</button>
+        </div>
+
+        <div class="horizontal-line"></div>
+
+        <h3>Remaining for the day:</h3>
+        <h4>Protein: <span id="remainingProtein">--</span></h4>
+        <h4>Calories: <span id="remainingKcal">--</span></h4>
+    </div>
+    
+    <div id="AddFood" class="tabcontent">
+        <h2>Add Food</h2>
+
+        <div class="horizontal-line"></div>
+        
+        <p>Enter new food items and their nutritional values.</p>
+    </div>
+    
+    <div id="Weight" class="tabcontent">
+        <h2>Weight Tracking</h2>
+
+        <div class="horizontal-line"></div>
+
+        <p>Weight loss: <span id="remainingProtein">--</span></p>
+        <canvas id="scatter" width="360" height="360"></canvas>
+        <div class="input-group">
+            <label>Weight:</label>
+            <input type="text" id="weightInput">
+            <button id="addWeightButton">Add</button>
+        </div>
+        
+        <div class="horizontal-line"></div>
+        
+        <div class="date-button-container">
+        </div>
+    </div>
+    
+    <div id="HistorySettings" class="tabcontent">
+        <h2>History & Settings</h2>
+
+        <div class="horizontal-line"></div>
+
+        <p>Enter daily amount of protein and calories.</p>
+        <div class="input-group">
+            <label>Protein:</label>
+            <input type="text" id="dailyProtein">
+            <label>Calories:</label>
+            <input type="text" id="dailyCalories">
+        </div>
+
+        <p>Adjust preferences and app settings.</p>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('scatter').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',  // Chart type
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'], // X-axis labels
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: [65, 59, 80, 81, 56, 55],  // Y-axis data points
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    
+    <script>
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].style.backgroundColor = "";
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
