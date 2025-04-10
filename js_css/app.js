@@ -330,6 +330,7 @@ function addNewFood() {
         }
     };
     text.textContent = name;
+    text.onclick = () => showFoodPrompt(name);
     div.appendChild(text);
     div.appendChild(button);
     cell.appendChild(div);
@@ -471,6 +472,7 @@ function addNewReceipe() {
         }
     };
     text.textContent = name;
+    text.onclick = () => showFoodPrompt(name);
     div.appendChild(text);
     div.appendChild(button);
     cell.appendChild(div);
@@ -746,6 +748,7 @@ function addContainer() {
         }
     };
     text.textContent = name;
+    text.onclick = () => showFoodPrompt(name);
     div.appendChild(text);
     div.appendChild(button);
     cell.appendChild(div);
@@ -794,7 +797,7 @@ function pressPersonSelect() {
 
 function searchSuggestions(input, container, searchArray) {
     const results = searchArray.filter(item => item.toLowerCase().includes(input.value.toLowerCase()));
-    results.sort((a, b) => a.indexOf(input) - b.indexOf(input));
+    results.sort((a, b) => a.indexOf(input.value) - b.indexOf(input.value));
     container.innerHTML = "";
     results.slice(0, 5).forEach(result => {
         const element = document.createElement("div");
@@ -864,12 +867,19 @@ async function readFile() {
 function showFoodPrompt(item) {
     document.getElementById("foodOverlay").style.display = "block";
     const prompt = document.getElementById("foodPrompt");
+    prompt.innerHTML = `<h3>${item}</h3>`
     if (item in window.receipes) {
         const food = window.receipes[item];
-        prompt.innerHTML = `<h3>${item}</h3><p>Protein: ${food.protein}</p><p>Calories: ${food.calories}</p>`;
+        prompt.innerHTML += `<p>Protein: ${food.protein}</p><p>Calories: ${food.calories}</p>`;
+        if ("receipe" in food) {
+            prompt.innerHTML += "<p>Receipe list:</p>"
+            food.receipe.forEach((entry) => {
+                prompt.innerHTML += `<p>- ${entry.amount}g ${entry.name}</p>`
+            })
+        }
     }
     else if (item in window.containers) {
-        prompt.innerHTML = `<h3>${item}</h3><p>Weight: ${window.containers[item]}</p>`;
+        prompt.innerHTML += `<p>Weight: ${window.containers[item]}</p>`;
     }
     prompt.style.display = "block";
 }
