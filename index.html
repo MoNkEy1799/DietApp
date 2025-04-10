@@ -27,6 +27,8 @@
     </div>
     
     <div id="Tracker" class="tabcontent active">
+        <div class="overlay" id="trackerOverlay" onclick="hidePrompt('tracker')"></div>
+        <div class="prompt" id="trackerPrompt"></div>
         <h2>Daily Nutrition Tracker</h2>
 
         <div class="horizontal-line"></div>
@@ -96,14 +98,14 @@
                     </tbody>
                 </table>
                 <div class="settings-group">
-                    <button id="undoFoodButton" onclick="undoTracker()">Remove Last Entry</button>
+                    <button id="undoFoodButton" onclick="showTrackerPrompt()">Remove Last Entry</button>
                 </div>
             </div>
         </div>
     </div>
     
     <div id="Foods" class="tabcontent">
-        <div class="overlay" id="foodOverlay" onclick="hidePrompt('foodPrompt')"></div>
+        <div class="overlay" id="foodOverlay" onclick="hidePrompt('food')"></div>
         <div class="prompt" id="foodPrompt"></div>
         <h2>Add Foods and Receipes</h2>
 
@@ -264,6 +266,8 @@
     </div>
     
     <div id="Weight" class="tabcontent">
+        <div class="overlay" id="weightOverlay" onclick="hidePrompt('weight')"></div>
+        <div class="prompt" id="weightPrompt"></div>
         <h2>Weight Tracking</h2>
 
         <div class="horizontal-line"></div>
@@ -306,7 +310,7 @@
                     </tbody>
                 </table>
                 <div class="settings-group">
-                    <button id="undoWeightButton" onclick="undoWeight()">Remove Last Entry</button>
+                    <button id="undoWeightButton" onclick="showWeightPrompt()">Remove Last Entry</button>
                 </div>
             </div>
         </div>
@@ -324,8 +328,8 @@
             <label for="dailyCalories">Calories:</label>
             <input type="number" id="dailyCalories">
         </div>
-        <button class="saveButton" onclick="changeSettings()">Change Daily Settings</button>
         <span id="settingsInfo" hidden>Settings saved!</span>
+        <button class="saveButton" onclick="changeSettings()">Change Daily Settings</button>
         
         <div class="horizontal-line"></div>
 

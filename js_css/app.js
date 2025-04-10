@@ -58,6 +58,7 @@ function loadData() {
     window.foodList = [];
     window.trackerTablePerson = undefined;
     window.weightTablePerson = undefined;
+    window.person = document.querySelector("input[name='person']:checked").value;
 
     // load default structure for storage if nothing is saved
     if (window.storage === null) {
@@ -158,10 +159,6 @@ function saveData(saveStorage, saveReceipes, saveLogs, saveContainers) {
     }
 }
 
-function getPerson() {
-    return document.querySelector("input[name='person']:checked").value;
-}
-
 function addTrackerValue() {
     const proteinInput = document.getElementById("proteinInput");
     let protein = Number(proteinInput.value);
@@ -172,7 +169,7 @@ function addTrackerValue() {
     const nameInput = document.getElementById("foodNameInput");
     const name = nameInput.value;
     const info = document.getElementById("trackerInfo");
-    let type = "Direct value input";
+    let type = "Direct input";
     if (!(protein+calories)) {
         if (!name || !amount) {
             info.innerHTML = "Enter a name and amount!"
@@ -201,13 +198,12 @@ function addTrackerValue() {
     caloriesInput.value = "";
     amountInput.value = "";
     nameInput.value = "";
-    const person = getPerson();
     const date = document.getElementById("dateSelector").value;
-    window.storage[person]["protein"+date].push(protein);
-    window.storage[person]["calories"+date].push(calories);
-    window.storage[person]["types"+date].push(type);
+    window.storage[window.person]["protein"+date].push(protein);
+    window.storage[window.person]["calories"+date].push(calories);
+    window.storage[window.person]["types"+date].push(type);
     saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false);
-    logCommand(`Tracker: added value for ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}, Type: ${type}`);
+    logCommand(`Tracker: added value for ${document.querySelector(`label[for=${window.person}]`).innerHTML} (${date}). Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}, Type: ${type}`);
     updateTracker();
     window.trackerTablePerson = undefined;
     if (document.getElementById("tracker-toggle").checked) {
@@ -216,13 +212,12 @@ function addTrackerValue() {
 }
 
 function undoTracker() {
-    const person = getPerson();
     const date = document.getElementById("dateSelector").value;
-    const protein = window.storage[person]["protein"+date].pop();
-    const calories = window.storage[person]["calories"+date].pop();
-    const type = window.storage[person]["types"+date].pop();
+    const protein = window.storage[window.person]["protein"+date].pop();
+    const calories = window.storage[window.person]["calories"+date].pop();
+    const type = window.storage[window.person]["types"+date].pop();
     saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false);
-    logCommand(`Tracker: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}, Type: ${type}`);
+    logCommand(`Tracker: removed value from ${document.querySelector(`label[for=${window.person}]`).innerHTML} (${date}). Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}, Type: ${type}`);
     updateTracker();
     window.trackerTablePerson = undefined;
     if (document.getElementById("tracker-toggle").checked) {
@@ -231,28 +226,26 @@ function undoTracker() {
 }
 
 function updateTracker() {
-    const person = getPerson();
     const date = document.getElementById("dateSelector").value;
-    const sumProtein = window.storage[person]["protein"+date].reduce((acc, val) => acc + val, 0);
-    const sumCalories = window.storage[person]["calories"+date].reduce((acc, val) => acc + val, 0);
+    const sumProtein = window.storage[window.person]["protein"+date].reduce((acc, val) => acc + val, 0);
+    const sumCalories = window.storage[window.person]["calories"+date].reduce((acc, val) => acc + val, 0);
     document.getElementById("remainHeader").innerHTML = "Remaining for " + date + " :";
-    document.getElementById("remainingProtein").innerHTML = Math.round(window.storage[person].proteinSetting - sumProtein);
-    document.getElementById("remainingCalories").innerHTML = Math.round(window.storage[person].caloriesSetting - sumCalories);
+    document.getElementById("remainingProtein").innerHTML = Math.round(window.storage[window.person].proteinSetting - sumProtein);
+    document.getElementById("remainingCalories").innerHTML = Math.round(window.storage[window.person].caloriesSetting - sumCalories);
 }
 
 function fillTrackerTable() {
-    const person = getPerson();
-    if (person === window.trackerTablePerson) {
+    if (window.person === window.trackerTablePerson) {
         return;
     }
-    window.trackerTablePerson = person;
+    window.trackerTablePerson = window.person;
     const table = document.getElementById("trackerTable").getElementsByTagName("tbody")[0];
     const lightColor = getComputedStyle(document.documentElement).getPropertyValue('--lighter_color');
     table.innerHTML = "";
     for (let day of ["Yesterday", "Today", "Tomorrow"]) {
-        const proteinList = window.storage[person]["protein"+day];
-        const calorieList = window.storage[person]["calories"+day];
-        const typeList = window.storage[person]["types"+day];
+        const proteinList = window.storage[window.person]["protein"+day];
+        const calorieList = window.storage[window.person]["calories"+day];
+        const typeList = window.storage[window.person]["types"+day];
         const row = table.insertRow();
         row.style.backgroundColor = lightColor;
         const cell = row.insertCell(0);
@@ -316,23 +309,15 @@ function addNewFood() {
     const cell = newRow.insertCell(0);
     const div = document.createElement("div");
     const text = document.createElement("span");
-    const button = document.createElement("button");
     div.classList.add("table-entry");
-    button.classList.add("table-entry-button");
-    button.innerHTML = "&times";
-    button.onclick = function () {
-        const confirm = window.confirm(`Do you want to delete the food: '${name}'?`)
-        if (confirm) {
-            table.deleteRow(this.closest("tr").rowIndex - 1);
-            delete window.receipes[name];
-            saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
-            logCommand(`Food: removed. Name: ${name}, Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}`);
-        }
-    };
     text.textContent = name;
-    text.onclick = () => showFoodPrompt(name);
+    text.onclick = function() {
+        showFoodPrompt(name, this.closest("tr").rowIndex);
+    };
+    div.onclick = function() {
+        showFoodPrompt(name, this.closest("tr").rowIndex);
+    };
     div.appendChild(text);
-    div.appendChild(button);
     cell.appendChild(div);
 
     const rows = Array.from(table.rows);
@@ -442,9 +427,10 @@ function addNewReceipe() {
         totalProtein += food.protein / 100 * entry.amount;
         totalCalories += food.calories / 100 * entry.amount;
     })
-    totalProtein = totalProtein / (weight - window.containers[container]) * 100;
-    totalCalories = totalCalories / (weight - window.containers[container]) * 100;
-    window.receipes[name] = {"protein": totalProtein, "calories": totalCalories, "receipe": [...window.foodList]};
+    const weightDiff = weight - window.containers[container];
+    totalProtein = totalProtein / weightDiff * 100;
+    totalCalories = totalCalories / weightDiff * 100;
+    window.receipes[name] = {"protein": totalProtein, "calories": totalCalories, "weight": weightDiff, "receipe": [...window.foodList]};
     saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
     logCommand(`Receipe: added. Name: ${name}, Protein: ${Math.round(totalProtein)}, Calories: ${Math.round(totalCalories)}`);
     window.foodList = [];
@@ -458,23 +444,15 @@ function addNewReceipe() {
     const cell = newRow.insertCell(0);
     const div = document.createElement("div");
     const text = document.createElement("span");
-    const button = document.createElement("button");
     div.classList.add("table-entry");
-    button.classList.add("table-entry-button");
-    button.innerHTML = "&times";
-    button.onclick = function () {
-        const confirm = window.confirm(`Do you want to delete the receipe: '${name}'?`)
-        if (confirm) {
-            table.deleteRow(this.closest("tr").rowIndex - 1);
-            delete window.receipes[name];
-            saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
-            logCommand(`Receipe: removed. Name: ${name}, Protein: ${Math.round(totalProtein)}, Calories: ${Math.round(totalCalories)}`);
-        }
-    };
     text.textContent = name;
-    text.onclick = () => showFoodPrompt(name);
+    text.onclick = function() {
+        showFoodPrompt(name, this.closest("tr").rowIndex);
+    };
+    div.onclick = function() {
+        showFoodPrompt(name, this.closest("tr").rowIndex);
+    };
     div.appendChild(text);
-    div.appendChild(button);
     cell.appendChild(div);
 
     const rows = Array.from(table.rows);
@@ -505,23 +483,15 @@ function fillReceipeContainerTable() {
         const cell = newRow.insertCell(0);
         const div = document.createElement("div");
         const text = document.createElement("span");
-        const button = document.createElement("button");
         div.classList.add("table-entry");
-        button.classList.add("table-entry-button");
-        button.innerHTML = "&times";
-        button.onclick = function () {
-            const confirm = window.confirm(`Do you want to delete the ${type}: '${name}'?`)
-            if (confirm) {
-                table.deleteRow(this.closest("tr").rowIndex - 1);
-                delete window.receipes[name];
-                saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
-                logCommand(`${type.charAt(0).toUpperCase()+type.slice(1)}: removed. Name: ${name}, Protein: ${Math.round(entry.protein)}, Calories: ${Math.round(entry.calories)}`);
-            }
-        };
         text.textContent = name;
-        text.onclick = () => showFoodPrompt(name);
+        text.onclick = function() {
+            showFoodPrompt(name, this.closest("tr").rowIndex);
+        };
+        div.onclick = function() {
+            showFoodPrompt(name, this.closest("tr").rowIndex);
+        };
         div.appendChild(text);
-        div.appendChild(button);
         cell.appendChild(div);
     
         const rows = Array.from(table.rows);
@@ -548,23 +518,15 @@ function fillReceipeContainerTable() {
         const cell = newRow.insertCell(0);
         const div = document.createElement("div");
         const text = document.createElement("span");
-        const button = document.createElement("button");
         div.classList.add("table-entry");
-        button.classList.add("table-entry-button");
-        button.innerHTML = "&times";
-        button.onclick = function () {
-            const confirm = window.confirm(`Do you want to delete the container: '${name}'?`)
-            if (confirm) {
-                containerTable.deleteRow(this.closest("tr").rowIndex - 1);
-                delete window.containers[name];
-                saveData(saveStorage = false, saveReceipes = false, saveLogs = false, saveContainers = true);
-                logCommand(`Container: removed. Name: ${name}, Weight: ${Math.round(window.containers[name])}`);
-            }
-        };
         text.textContent = name;
-        text.onclick = () => showFoodPrompt(name);
+        text.onclick = function() {
+            showFoodPrompt(name, this.closest("tr").rowIndex);
+        };
+        div.onclick = function() {
+            showFoodPrompt(name, this.closest("tr").rowIndex);
+        };
         div.appendChild(text);
-        div.appendChild(button);
         cell.appendChild(div);
     
         const rows = Array.from(containerTable.rows);
@@ -618,11 +580,10 @@ function addWeightValue() {
     }
     dateInput.value = "";
     weightInput.value = "";
-    const person = getPerson();
-    window.storage[person].dates.push(date);
-    window.storage[person].weights.push(weight);
+    window.storage[window.person].dates.push(date);
+    window.storage[window.person].weights.push(weight);
     saveData(saveStorage = true, saveReceipes = false, saveLogs = false, saveContainers = false);
-    logCommand(`Weight: added for ${document.querySelector(`label[for=${person}]`).innerHTML}. Date: ${date}, Weight: ${weight.toFixed(1)}`);
+    logCommand(`Weight: added for ${document.querySelector(`label[for=${window.person}]`).innerHTML}. Date: ${date}, Weight: ${weight.toFixed(1)}`);
     updateWeight();
     window.weightTablePerson = undefined;
     if (document.getElementById("weight-toggle").checked) {
@@ -631,11 +592,10 @@ function addWeightValue() {
 }
 
 function undoWeight() {
-    const person = getPerson();
-    const date = window.storage[person].dates.pop();
-    const weight = window.storage[person].weights.pop();
+    const date = window.storage[window.person].dates.pop();
+    const weight = window.storage[window.person].weights.pop();
     saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false, saveContainers = false);
-    logCommand(`Weight: removed from ${document.querySelector(`label[for=${person}]`).innerHTML}. Weight: ${weight.toFixed(1)}, Date: ${date}`);
+    logCommand(`Weight: removed from ${document.querySelector(`label[for=${window.person}]`).innerHTML}. Weight: ${weight.toFixed(1)}, Date: ${date}`);
     updateWeight();
     window.weightTablePerson = undefined;
     if (document.getElementById("weight-toggle").checked) {
@@ -644,32 +604,30 @@ function undoWeight() {
 }
 
 function updateWeight() {
-    const person = getPerson();
-    const weights = window.storage[person].weights;
+    const weights = window.storage[window.person].weights;
     const diff = -(weights[weights.length-1] - weights[0]);
     document.getElementById("weightLoss").innerHTML = isNaN(diff) ? "0 kg" : diff + " kg";
-    weightChart.data.labels = window.storage[person].dates;
-    weightChart.data.datasets[0].data = window.storage[person].weights;
+    weightChart.data.labels = window.storage[window.person].dates;
+    weightChart.data.datasets[0].data = window.storage[window.person].weights;
     weightChart.update();
 }
 
 function fillWeightTable() {
-    const person = getPerson();
-    if (person === window.weightTablePerson) {
+    if (window.person === window.weightTablePerson) {
         return;
     }
-    window.weightTablePerson = person;
+    window.weightTablePerson = window.person;
     const table = document.getElementById("weightTable").getElementsByTagName("tbody")[0];
     table.innerHTML = "";
-    if (window.storage[person].weights.length === 0) {
+    if (window.storage[window.person].weights.length === 0) {
         const row = table.insertRow();
         row.insertCell(0).textContent = "-";
         row.insertCell(1).textContent = "-";
     }
-    for (let i = 0; i < window.storage[person].weights.length; i++) {
+    for (let i = 0; i < window.storage[window.person].weights.length; i++) {
         const row = table.insertRow();
-        row.insertCell(0).textContent = window.storage[person].dates[i];
-        row.insertCell(1).textContent = window.storage[person].weights[i].toFixed(1);
+        row.insertCell(0).textContent = window.storage[window.person].dates[i];
+        row.insertCell(1).textContent = window.storage[window.person].weights[i].toFixed(1);
     }
 }
 
@@ -684,19 +642,18 @@ function logCommand(log) {
 }
 
 function changeSettings() {
-    const person = getPerson();
     const proteinInput = document.getElementById("dailyProtein");
     let protein = Number(proteinInput.value);
     const caloriesInput = document.getElementById("dailyCalories");
     let calories = Number(caloriesInput.value);
-    protein = protein ? protein : window.storage[person].proteinSetting;
-    calories = calories ? calories : window.storage[person].caloriesSetting;
+    protein = protein ? protein : window.storage[window.person].proteinSetting;
+    calories = calories ? calories : window.storage[window.person].caloriesSetting;
     proteinInput.value = "";
     caloriesInput.value = "";
-    window.storage[person].proteinSetting = protein;
-    window.storage[person].caloriesSetting = calories;
+    window.storage[window.person].proteinSetting = protein;
+    window.storage[window.person].caloriesSetting = calories;
     saveData(saveStorage = true, saveReceipes = false, saveLogs = false, saveContainers = false);
-    logCommand(`Settings: changed dailys for ${document.querySelector(`label[for=${person}]`).innerHTML}. Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}`);
+    logCommand(`Settings: changed dailys for ${document.querySelector(`label[for=${window.person}]`).innerHTML}. Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}`);
     const info = document.getElementById("settingsInfo");
     info.hidden = false;
     setTimeout(() => {info.hidden = true;}, 2000);
@@ -780,6 +737,7 @@ function fillSettingsTable() {
 
 function pressPersonSelect() {
     const activeTab = document.querySelector('.tablink.active').value;
+    window.person = document.querySelector("input[name='person']:checked").value;
     if (activeTab === "tracker") {
         updateTracker();
         document.getElementById("tracker-toggle").checked = false;
@@ -789,9 +747,8 @@ function pressPersonSelect() {
         document.getElementById("weight-toggle").checked = false;
     }
     else if (activeTab === "settings") {
-        const person = getPerson();
-        document.getElementById("dailyProtein").placeholder = window.storage[person].proteinSetting;
-        document.getElementById("dailyCalories").placeholder = window.storage[person].caloriesSetting;
+        document.getElementById("dailyProtein").placeholder = window.storage[window.person].proteinSetting;
+        document.getElementById("dailyCalories").placeholder = window.storage[window.person].caloriesSetting;
     }
 }
 
@@ -818,7 +775,10 @@ function searchSuggestions(input, container, searchArray) {
 }
 
 function hideSuggestions(container) {
-    document.getElementById(container).style.display = "none";
+    if (!suggestionClick) {
+        document.getElementById(container).style.display = "none";
+    }
+    suggestionClick = false;
 }
 
 async function saveFile() {
@@ -864,31 +824,139 @@ async function readFile() {
     }
 }
 
-function showFoodPrompt(item) {
+function showFoodPrompt(item, deleteIndex) {
     document.getElementById("foodOverlay").style.display = "block";
     const prompt = document.getElementById("foodPrompt");
-    prompt.innerHTML = `<h3>${item}</h3>`
+    prompt.innerHTML = `<h3><u>${item}</u></h3>`;
+    let food, receipe, container;
     if (item in window.receipes) {
-        const food = window.receipes[item];
-        prompt.innerHTML += `<p>Protein: ${food.protein}</p><p>Calories: ${food.calories}</p>`;
+        food = window.receipes[item];
+        prompt.innerHTML += `<p>Protein: ${food.protein.toFixed(1)} g</p><p>Calories: ${Math.round(food.calories)} kcal</p>`;
         if ("receipe" in food) {
-            prompt.innerHTML += "<p>Receipe list:</p>"
-            food.receipe.forEach((entry) => {
-                prompt.innerHTML += `<p>- ${entry.amount}g ${entry.name}</p>`
+            receipe = food;
+            food = undefined;
+            prompt.innerHTML += `<p>Weight: ${receipe.weight} g</p>`;
+            prompt.innerHTML += "<h4>Receipe list:</h4>";
+            receipe.receipe.forEach((entry) => {
+                prompt.innerHTML += `<p>• ${entry.amount}g ${entry.name}</p>`;
             })
         }
     }
     else if (item in window.containers) {
-        prompt.innerHTML += `<p>Weight: ${window.containers[item]}</p>`;
+        container = window.containers[item];
+        prompt.innerHTML += `<p>Weight: ${container} g</p>`;
     }
+    const button = document.createElement("button");
+    button.textContent = "Delete";
+    button.onclick = function () {
+        prompt.innerHTML = "";
+        const confirm = document.createElement("button");
+        confirm.textContent = "Confirm";
+        const cancel = document.createElement("button");
+        cancel.textContent = "Cancel";
+        cancel.onclick = () => {
+            hidePrompt("food");
+        }
+        if (food) {
+            confirm.onclick = () => {
+                document.getElementById("foodListTable").deleteRow(deleteIndex);
+                delete window.receipes[item];
+                saveData(saveStorage = false, saveReceipes = true, saveLogs = true, saveContainers = true);
+                logCommand(`Food: removed. Name: ${item}, Protein: ${food.protein.toFixed(1)}, Calories: ${Math.round(food.calories)}`);
+                hidePrompt("food");
+            }
+            prompt.innerHTML = `<p>Delete food ${item}?</p>`;
+        }
+        else if (receipe) {
+            confirm.onclick = () => {
+                document.getElementById("receipeListTable").deleteRow(deleteIndex);
+                delete window.receipes[item];
+                saveData(saveStorage = false, saveReceipes = true, saveLogs = true, saveContainers = true);
+                logCommand(`Receipe: removed. Name: ${item}, Protein: ${receipe.protein.toFixed(1)}, Calories: ${Math.round(receipe.calories)}`);
+                hidePrompt("food");
+            }
+            prompt.innerHTML = `<p>Delete receipe ${item}?</p>`;
+        }
+        else if (container) {
+            confirm.onclick = () => {
+                document.getElementById("containerListTable").deleteRow(deleteIndex);
+                delete window.containers[item];
+                saveData(saveStorage = false, saveReceipes = true, saveLogs = true, saveContainers = true);
+                logCommand(`Container: removed. Name: ${item}, Weight: ${container}`);
+                hidePrompt("food");
+            }
+            prompt.innerHTML = `<p>Delete container ${item}?</p>`;
+        }
+        const div = document.createElement("div");
+        div.classList.add("settings-group");
+        div.appendChild(confirm);
+        div.appendChild(cancel);
+        prompt.appendChild(div);
+        prompt.style.display = "block";
+    };
+    prompt.appendChild(button);
     prompt.style.display = "block";
 }
 
-function hidePrompt(prompt) {
-    document.getElementById("foodOverlay").style.display = "none";
-    document.getElementById(prompt).style.display = "none";
+function showTrackerPrompt() {
+    const date = document.getElementById("dateSelector").value;
+    if (window.storage[window.person]["protein"+date].length === 0) {
+        return;
+    }
+    document.getElementById("trackerOverlay").style.display = "block";
+    const prompt = document.getElementById("trackerPrompt");
+    prompt.innerHTML = `<p>Delete the last value from ${date}?</p>`;
+    const confirm = document.createElement("button");
+    confirm.textContent = "Confirm";
+    confirm.onclick = () => {
+        undoTracker();
+        hidePrompt("tracker");
+    }
+    const cancel = document.createElement("button");
+    cancel.textContent = "Cancel";
+    cancel.onclick = () => {
+        hidePrompt("tracker");
+    }
+    const div = document.createElement("div");
+    div.classList.add("settings-group");
+    div.appendChild(confirm);
+    div.appendChild(cancel);
+    prompt.appendChild(div);
+    prompt.style.display = "block";
 }
 
+function showWeightPrompt() {
+    if (window.storage[window.person].weights.length == 0) {
+        return;
+    }
+    document.getElementById("weightOverlay").style.display = "block";
+    const prompt = document.getElementById("weightPrompt");
+    prompt.innerHTML = `<p>Delete the last weight?</p>`;
+    const confirm = document.createElement("button");
+    confirm.textContent = "Confirm";
+    confirm.onclick = () => {
+        undoWeight();
+        hidePrompt("weight");
+    }
+    const cancel = document.createElement("button");
+    cancel.textContent = "Cancel";
+    cancel.onclick = () => {
+        hidePrompt("weight");
+    }
+    const div = document.createElement("div");
+    div.classList.add("settings-group");
+    div.appendChild(confirm);
+    div.appendChild(cancel);
+    prompt.appendChild(div);
+    prompt.style.display = "block";
+}
+
+function hidePrompt(name) {
+    document.getElementById(`${name}Overlay`).style.display = "none";
+    document.getElementById(`${name}Prompt`).style.display = "none";
+}
+
+let suggestionClick = false;
 // first thing is load data from local storage
 loadData();
 updateTracker();
@@ -902,6 +970,7 @@ document.getElementById("foodNameInput").addEventListener("input", () => {
         container.style.display = "none";
     }
 });
+document.getElementById("suggestionsContainer").addEventListener("mousedown", () => {suggestionClick = true;})
 document.getElementById("toReceipeNameInput").addEventListener("input", () => {
     const input = document.getElementById("toReceipeNameInput");
     const container = document.getElementById("receipeContainer");
@@ -912,6 +981,7 @@ document.getElementById("toReceipeNameInput").addEventListener("input", () => {
         container.style.display = "none";
     }
 });
+document.getElementById("receipeContainer").addEventListener("mousedown", () => {suggestionClick = true;})
 document.getElementById("containerInput").addEventListener("input", () => {
     const input = document.getElementById("containerInput");
     const container = document.getElementById("containerContainer");
@@ -922,6 +992,7 @@ document.getElementById("containerInput").addEventListener("input", () => {
         container.style.display = "none";
     }
 });
+document.getElementById("containerContainer").addEventListener("mousedown", () => {suggestionClick = true;})
 
 const weightChart = new Chart(document.getElementById('scatter').getContext('2d'), {
     type: 'line',
