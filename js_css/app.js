@@ -366,7 +366,7 @@ function addNewFood() {
 
 function addToReceipe() {
     const amountInput = document.getElementById("receipeAmountInput");
-    const amount = Number(amountInput.value);
+    let amount = Number(amountInput.value);
     const nameInput = document.getElementById("toReceipeNameInput");
     const name = nameInput.value;
     const info = document.getElementById("addFoodInfo");
@@ -384,19 +384,38 @@ function addToReceipe() {
     }
     amountInput.value = "";
     nameInput.value = "";
-    window.storage.foodList.push({"name": name, "amount": amount});
+    const index = window.storage.foodList.findIndex(entry => name === entry.name);
+    if (index === -1) {
+        window.storage.foodList.push({"name": name, "amount": amount});
+    }
+    else {
+        window.storage.foodList[index].amount += amount;
+    }
     saveData(saveStorage = true, saveReceipes = false, saveLogs = false, saveContainers = false);
     logCommand(`<b>${window.storage.today} ${new Date().toLocaleTimeString("de-DE")} - Receipe</b><br>`+
     `Added food to list. Name: ${name}, Amount: ${Math.round(amount)}`);
 
     const table = document.getElementById("receipeTable").getElementsByTagName("tbody")[0];
-    const cell = table.insertRow().insertCell(0);
-    const div = document.createElement("div");
-    const text = document.createElement("span");
-    const button = document.createElement("button");
-    div.classList.add("table-entry");
-    button.classList.add("table-entry-button");
-    button.innerHTML = "&times";
+    let cell, div, text, button;
+    if (index === -1) {
+        cell = table.insertRow().insertCell(0);
+        div = document.createElement("div");
+        text = document.createElement("span");
+        button = document.createElement("button");
+        div.classList.add("table-entry");
+        button.classList.add("table-entry-button");
+        button.innerHTML = "&times";
+        div.appendChild(text);
+        div.appendChild(button);
+        cell.appendChild(div);
+    }
+    else {
+        cell = table.rows[index].cells[0];
+        div = cell.querySelector("div");
+        text = cell.querySelector("span");
+        button = cell.querySelector("button");
+        amount = window.storage.foodList[index].amount;
+    }
     button.onclick = function () {
         const rowIndex = this.closest("tr").rowIndex - 1;
         table.deleteRow(rowIndex);
@@ -406,9 +425,6 @@ function addToReceipe() {
         `Removed food from list. Name: ${name}, Amount: ${Math.round(amount)}`);
     };
     text.textContent = `${Math.round(amount)}g ${name}`;
-    div.appendChild(text);
-    div.appendChild(button);
-    cell.appendChild(div);
 }
 
 function addNewReceipe() {
