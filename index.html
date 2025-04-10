@@ -111,14 +111,15 @@
         </div>
         <div class="input-group">
             <label>Protein:</label>
-            <input type="text" id="newFoodProtein">
+            <input type="number" id="newFoodProtein">
         </div>
         <div class="input-group">
             <label>Calories:</label>
-            <input type="text" id="newFoodCalories">
+            <input type="number" id="newFoodCalories">
         </div>
+        <span id="newFoodInfo" hidden>Name already exists!</span>
         <div class="settings-group">
-            <button id="addFoodButton">Add Food</button>
+            <button id="addFoodButton" onclick="addNewFood()">Add Food</button>
             <button id="undoFoodButton">Undo</button>
         </div>
 
@@ -138,10 +139,11 @@
 
         <div class="settings-group">
             <label>Date:</label>
-            <input type="text" id="weightDate">
+            <input type="text" id="weightDate" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
             <label>Weight:</label>
-            <input type="text" id="weightInput">
+            <input type="number" id="weightInput">
         </div>
+        <span id="weightInfo" hidden>Invalid date!</span>
         <div class="settings-group">
             <button id="addWeightButton" onclick="addWeightValue()">Add Weight</button>
             <button id="undoWeightButton" onclick="undoWeight()">Undo</button>
@@ -185,7 +187,7 @@
             <input type="text" id="dailyCalories">
         </div>
         <button class="saveButton" onclick="changeSettings()">Change Daily Settings</button>
-        <p id="settingsInfo" hidden>Settings saved!</p>
+        <span id="settingsInfo" hidden>Settings saved!</span>
         
         <div class="horizontal-line"></div>
 
