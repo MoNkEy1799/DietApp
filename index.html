@@ -175,6 +175,10 @@
                 </table>
 
                 <div class="input-group">
+                    <label for="receipeNameInput">Name:</label>
+                    <input type="number" id="receipeNameInput">
+                </div>
+                <div class="input-group">
                     <label for="containerInput">Container:</label>
                     <input type="text" id="containerInput">
                     <div id="containerContainer"></div>
@@ -183,10 +187,7 @@
                     <label for="totalWeight">Total weight:</label>
                     <input type="text" id="totalWeight">
                 </div>
-                <div class="input-group">
-                    <label for="receipeNameInput">Name:</label>
-                    <input type="number" id="receipeNameInput">
-                </div>
+                <span id="saveReceipeInfo" hidden>Invalid date!</span>
                 <div class="settings-group">
                     <button id="saveReceipeButton">Save receipe</button>
                 </div>
@@ -202,9 +203,6 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>-</td>
-                </tr>
             </tbody>
         </table>
         <table id="receipeListTable">
@@ -214,19 +212,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>-</td>
-                </tr>
             </tbody>
         </table>
-        <div class="input-group">
-            <label for="removeInput">Remove Entry:</label>
-            <input type="text" id="removeInput">
-            <div id="removeContainer"></div>
-        </div>
-        <div class="settings-group">
-            <button id="undoFoodButton">Remove Food/ Receipe</button>
-        </div>
     </div>
     
     <div id="Weight" class="tabcontent">
