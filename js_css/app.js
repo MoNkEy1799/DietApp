@@ -517,6 +517,7 @@ function fillReceipeContainerTable() {
             }
         };
         text.textContent = name;
+        text.onclick = () => showFoodPrompt(name);
         div.appendChild(text);
         div.appendChild(button);
         cell.appendChild(div);
@@ -559,6 +560,7 @@ function fillReceipeContainerTable() {
             }
         };
         text.textContent = name;
+        text.onclick = () => showFoodPrompt(name);
         div.appendChild(text);
         div.appendChild(button);
         cell.appendChild(div);
@@ -857,6 +859,24 @@ async function readFile() {
     } catch (err) {
         window.alert(`File reading failed due to the following error: ${err}`);
     }
+}
+
+function showFoodPrompt(item) {
+    document.getElementById("foodOverlay").style.display = "block";
+    const prompt = document.getElementById("foodPrompt");
+    if (item in window.receipes) {
+        const food = window.receipes[item];
+        prompt.innerHTML = `<h3>${item}</h3><p>Protein: ${food.protein}</p><p>Calories: ${food.calories}</p>`;
+    }
+    else if (item in window.containers) {
+        prompt.innerHTML = `<h3>${item}</h3><p>Weight: ${window.containers[item]}</p>`;
+    }
+    prompt.style.display = "block";
+}
+
+function hidePrompt(prompt) {
+    document.getElementById("foodOverlay").style.display = "none";
+    document.getElementById(prompt).style.display = "none";
 }
 
 // first thing is load data from local storage
