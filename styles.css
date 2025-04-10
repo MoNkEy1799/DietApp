@@ -61,6 +61,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
 }
 
 .input-group label {
@@ -239,6 +240,30 @@ button:active {
 
 #personSelectorContainer input[type="radio"] {
     display: none;
+}
+
+#suggestionsContainer {
+    background-color: var(--lighter_color);
+    color: var(--text_color);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+    display: none;
+    position: absolute;
+    width: 61%;
+    top: 95%;
+    right: 0;
+    z-index: 999;
+}
+
+.suggestion {
+    padding: 7px;
+    border-radius: 5px;
+}
+
+.suggestion.selected {
+    background-color: var(--dark_accent);
+    color: var(--text_color);
 }
 
 [id*="Table"] {
