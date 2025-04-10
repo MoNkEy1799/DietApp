@@ -97,13 +97,14 @@ body {
 }
 
 .settings-group button {
+    flex: 1;
     height: 40px;
     font-size: 16px;
 }
 
 .settings-group input {
     flex: 1;
-    min-width: 80px;
+    min-width: 60px;
     background-color: var(--lighter_color);
     color: var(--text_color);
     padding: 8px;
@@ -181,7 +182,7 @@ button:active {
     width: 100%;
 }
 
-#saveButton {
+.saveButton {
     align-items: center;
     width: 100%;
     padding: 8px 16px;

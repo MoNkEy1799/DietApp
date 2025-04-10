@@ -299,8 +299,10 @@ function logCommand(log) {
 
 function changeSettings() {
     const person = getPerson();
-    const protein = Number(document.getElementById("dailyProtein").value);
-    const calories = Number(document.getElementById("dailyCalories").value);
+    let protein = Number(document.getElementById("dailyProtein").value);
+    let calories = Number(document.getElementById("dailyCalories").value);
+    protein = protein ? protein : window.storage[person].proteinSetting;
+    calories = calories ? calories : window.storage[person].caloriesSetting;
     window.storage[person].proteinSetting = protein;
     window.storage[person].caloriesSetting = calories;
     saveData(saveStorage=true);
@@ -358,6 +360,36 @@ function searchSuggestions(input) {
     }
     else {
         container.style.display = "none";
+    }
+}
+
+async function saveFile() {
+    try {
+        const handle = await window.showSaveFilePicker({
+            suggestedName: "data.txt",
+            types: [{ accept: { "text/plain": [".txt"] } }],
+        });
+        const data = {
+            "storage": window.storage,
+            "receipes": window.receipes,
+            "logs": window.logs
+        };
+        const writable = await handle.createWritable();
+        await writable.write(JSON.stringify(data));
+        await writable.close();
+    } catch (err) {
+        console.error("File save failed:", err);
+    }
+}
+
+async function readFile() {
+    try {
+        const [fileHandle] = await window.showOpenFilePicker();
+        const file = await fileHandle.getFile();
+        const text = await file.text();
+        console.log("File content:", text);
+    } catch (err) {
+        console.error("File read failed:", err);
     }
 }
 
