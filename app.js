@@ -840,6 +840,7 @@ async function readFile() {
         if (confirm) {
             const loadedData = JSON.parse(text);
             window.storage = loadedData.storage;
+            window.storage.today = dateToString(window.today);
             window.receipes = loadedData.receipes;
             window.logs = loadedData.logs;
             window.containers = loadedData.containers;
