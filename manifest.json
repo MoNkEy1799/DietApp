@@ -1,7 +1,7 @@
 {
     "name": "DietApp",
     "short_name": "Diet",
-    "description": "Small diet tracking app.",
+    "description": "Diet tracking app.",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait",
@@ -9,11 +9,11 @@
     "theme_color": "#2a2a2c",
     "icons": [
       {
-        "src": "image.ico",
+        "src": "img/image.ico",
         "sizes": "256x256"
       },
       {
-        "src": "image.svg",
+        "src": "img/image.svg",
         "sizes": "72x72 96x96 128x128 256x256"
       }
     ]
