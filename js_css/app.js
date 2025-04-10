@@ -22,6 +22,7 @@ function openTab(evt, tabName) {
     else if (tabName === "Settings") {
         document.getElementById("dailyProtein").placeholder = window.storage[window.person].proteinSetting;
         document.getElementById("dailyCalories").placeholder = window.storage[window.person].caloriesSetting;
+        document.getElementById("weightGoal").placeholder = window.storage[window.person].weightGoal;
         document.getElementById("settings-toggle").checked = false;
     }
 }
@@ -35,7 +36,7 @@ function dateToString(date) {
 }
 
 function stringToDate(string) {
-    const parts = string.split('.');
+    const parts = string.split(".");
     const day = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1;
     const year = parseInt(parts[2], 10);
@@ -74,8 +75,9 @@ function loadData() {
                 proteinTomorrow: [],
                 caloriesTomorrow: [],
                 typesTomorrow: [],
-                proteinSetting: 120,
-                caloriesSetting: 2000,
+                proteinSetting: 0,
+                caloriesSetting: 0,
+                weightGoal: 0,
                 weights: [],
                 dates: [],
             },
@@ -89,8 +91,9 @@ function loadData() {
                 proteinTomorrow: [],
                 caloriesTomorrow: [],
                 typesTomorrow: [],
-                proteinSetting: 120,
-                caloriesSetting: 2000,
+                proteinSetting: 0,
+                caloriesSetting: 0,
+                weightGoal: 0,
                 weights: [],
                 dates: [],
             },
@@ -168,6 +171,7 @@ function loadData() {
     document.getElementById("weightDate").placeholder = window.storage.today;
     document.getElementById("dailyProtein").placeholder = window.storage.person1.proteinSetting;
     document.getElementById("dailyCalories").placeholder = window.storage.person1.caloriesSetting;
+    document.getElementById("weightGoal").placeholder = window.storage.person1.weightGoal;
 }
 
 function saveData(saveStorage, saveReceipes, saveLogs, saveContainers) {
@@ -270,7 +274,7 @@ function fillTrackerTable() {
     }
     window.trackerTablePerson = window.person;
     const table = document.getElementById("trackerTable").getElementsByTagName("tbody")[0];
-    const lightColor = getComputedStyle(document.documentElement).getPropertyValue('--lighter_color');
+    const lightColor = getComputedStyle(document.documentElement).getPropertyValue("--lighter_color");
     table.innerHTML = "";
     for (let day of ["Yesterday", "Today", "Tomorrow"]) {
         const proteinList = window.storage[window.person]["protein"+day];
@@ -530,7 +534,7 @@ function fillReceipeContainerTable() {
             table.insertBefore(newRow, rows[index]);
         }
     }
-    // insert '-' if table is empty
+    // insert "-" if table is empty
     if (receipeTable.rows.length === 0) {
         receipeTable.insertRow().insertCell(0).textContent = "-";
     }
@@ -663,6 +667,9 @@ function updateWeight() {
     document.getElementById("weightLoss").innerHTML = isNaN(diff) ? "0 kg" : diff.toFixed(1) + " kg";
     weightChart.data.labels = window.storage[window.person].dates;
     weightChart.data.datasets[0].data = window.storage[window.person].weights;
+    weightChart.options.plugins.annotation.annotations.goal.yMin = window.storage[window.person].weightGoal;
+    weightChart.options.plugins.annotation.annotations.goal.yMax = window.storage[window.person].weightGoal;
+    weightChart.options.scales.y.min = window.storage[window.person].weightGoal - 2;
     weightChart.update();
 }
 
@@ -698,17 +705,24 @@ function changeSettings() {
     let protein = Number(proteinInput.value);
     const caloriesInput = document.getElementById("dailyCalories");
     let calories = Number(caloriesInput.value);
+    const weightInput = document.getElementById("weightGoal");
+    let weight = Number(weightInput.value);
     protein = protein ? protein : window.storage[window.person].proteinSetting;
     calories = calories ? calories : window.storage[window.person].caloriesSetting;
+    weight = weight ? weight : window.storage[window.person].weightGoal;
     proteinInput.value = "";
     caloriesInput.value = "";
+    weightInput.value = "";
     window.storage[window.person].proteinSetting = protein;
     window.storage[window.person].caloriesSetting = calories;
+    window.storage[window.person].weightGoal = weight;
     saveData(saveStorage = true, saveReceipes = false, saveLogs = false, saveContainers = false);
     logCommand(`<b>${window.storage.today} ${new Date().toLocaleTimeString("de-DE")} - Settings</b><br>`+
-    `Changed dailys for ${document.querySelector(`label[for=${window.person}]`).innerHTML}. Protein: ${protein.toFixed(1)}, Calories: ${Math.round(calories)}`);
+    `Changed for ${document.querySelector(`label[for=${window.person}]`).innerHTML}. `+
+    `Protein: ${protein.toFixed(1)}, Calories: ${Math.round(calories)}, WeightGoal: ${weight.toFixed(1)}`);
     document.getElementById("dailyProtein").placeholder = window.storage[window.person].proteinSetting;
     document.getElementById("dailyCalories").placeholder = window.storage[window.person].caloriesSetting;
+    document.getElementById("weightGoal").placeholder = window.storage[window.person].weightGoal;
     const info = document.getElementById("settingsInfo");
     info.hidden = false;
     setTimeout(() => {info.hidden = true;}, 2000);
@@ -784,7 +798,7 @@ function fillSettingsTable() {
 }
 
 function pressPersonSelect() {
-    const activeTab = document.querySelector('.tablink.active').value;
+    const activeTab = document.querySelector(".tablink.active").value;
     window.person = document.querySelector("input[name='person']:checked").value;
     if (activeTab === "tracker") {
         updateTracker();
@@ -797,6 +811,7 @@ function pressPersonSelect() {
     else if (activeTab === "settings") {
         document.getElementById("dailyProtein").placeholder = window.storage[window.person].proteinSetting;
         document.getElementById("dailyCalories").placeholder = window.storage[window.person].caloriesSetting;
+        document.getElementById("weightGoal").placeholder = window.storage[window.person].weightGoal;
     }
 }
 
@@ -1025,6 +1040,7 @@ function showSettingsPrompt(file) {
             saveData(saveStorage=true, saveReceipes=true, saveLogs=true, saveContainers = true);
             document.getElementById("dailyProtein").placeholder = window.storage[window.person].proteinSetting;
             document.getElementById("dailyCalories").placeholder = window.storage[window.person].caloriesSetting;
+            document.getElementById("weightGoal").placeholder = window.storage[window.person].weightGoal;
             prompt.innerHTML = `<p>Data was successfully loaded from '${file.name}'!</p>`;
             prompt.style.display = "block";
             setTimeout(() => {hidePrompt("settings");}, 2000);
@@ -1089,13 +1105,15 @@ document.getElementById("containerInput").addEventListener("input", () => {
 });
 document.getElementById("containerContainer").addEventListener("mousedown", () => {suggestionClick = true;});
 
-const weightChart = new Chart(document.getElementById('scatter').getContext('2d'), {
-    type: 'line',
+const weightChart = new Chart(document.getElementById("scatter").getContext("2d"), {
+    type: "line",
     data: {
         labels: window.storage.person1.dates,
         datasets: [{
             data: window.storage.person1.weights,
             borderWidth: 1,
+            borderColor: "#2e4065",
+            backgroundColor: "#2e4065",
         }],
     },
     options: {
@@ -1107,6 +1125,17 @@ const weightChart = new Chart(document.getElementById('scatter').getContext('2d'
                 callbacks: {
                     label: function(item) {return item.raw.toFixed(1) + " kg";},
                 }
+            },
+            annotation: {
+                annotations: {
+                    goal: {
+                        type: "line",
+                        yMin: 0.5,
+                        yMax: 0.5,
+                        borderColor: "#8b8b8e",
+                        borderWidth: 1,
+                    }
+                }
             }
         },
         scales: {
@@ -1115,6 +1144,9 @@ const weightChart = new Chart(document.getElementById('scatter').getContext('2d'
                     maxRotation: 60,
                     minRotation: 60,
                 }
+            },
+            y: {
+                min: window.storage[window.person].weightGoal - 2,
             }
         }
     }

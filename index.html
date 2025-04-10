@@ -8,6 +8,7 @@
     <link rel="manifest" href="manifest.json"/>
     <link rel="icon" href="img/image.svg"/>
     <script src="js_css/chart.js"></script>
+    <script src="js_css/annotations.js"></script>
 </head>
 <body>
     <p id="dateDisplay"><b>Today:</b></p>
@@ -320,15 +321,19 @@
 
         <div class="horizontal-line"></div>
         
-        <p>Enter daily amount of protein and calories.</p>
+        <p>Enter daily amount of protein/ calories and weight goal.</p>
         <div class="settings-group">
             <label for="dailyProtein">Protein:</label>
             <input type="number" id="dailyProtein">
             <label for="dailyCalories">Calories:</label>
             <input type="number" id="dailyCalories">
         </div>
+        <div class="settings-group">
+            <label for="weightGoal">Weight Goal:</label>
+            <input type="number" id="weightGoal">
+        </div>
         <span id="settingsInfo" hidden>Settings saved!</span>
-        <button class="saveButton" onclick="changeSettings()">Change Daily Settings</button>
+        <button class="saveButton" onclick="changeSettings()">Change Settings</button>
         
         <div class="horizontal-line"></div>
 
