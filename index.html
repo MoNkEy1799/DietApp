@@ -113,7 +113,7 @@
                 <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
                     <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Add New Food
+                Add Food
             </label>
             <div class="expandable-content">
                 <p>Add new food item by inserting the protein and calories per 100g.</p>
@@ -144,7 +144,7 @@
                 <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
                     <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Add New Receipe
+                Add Receipe
             </label>
             <div class="expandable-content">
                 <p>Create a new receipe with different foods.</p>
@@ -196,6 +196,38 @@
 
         <div class="horizontal-line"></div>
 
+        <div class="expandable-section">
+            <input type="checkbox" id="container-toggle" class="expand-toggle" onclick="expandToggle('container')"/>
+            <label for="container-toggle" class="section-label">
+                <svg class="arrow" width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Add Container
+            </label>
+            <div class="expandable-content">
+                <p>Add a new container for receipes.</p>
+                <div class="input-group">
+                    <label for="containerNameInput">Name:</label>
+                    <input type="text" id="containerNameInput">
+                    <div id="containerContainer"></div>
+                </div>
+                <div class="input-group">
+                    <label for="containerWeightInput">Weight:</label>
+                    <input type="text" id="containerWeightInput">
+                </div>
+                <span id="saveContainerInfo" hidden>No name given!</span>
+                <div class="settings-group">
+                    <button id="saveContainerButton" onclick="addContainer()">Save container</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="horizontal-line"></div>
+
+        <p>Jump to:</p>
+
+        <div class="horizontal-line"></div>
+
         <table id="foodListTable">
             <thead>
                 <tr>
@@ -209,6 +241,15 @@
             <thead>
                 <tr>
                     <th>Receipes</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <table id="containerListTable">
+            <thead>
+                <tr>
+                    <th>Containers</th>
                 </tr>
             </thead>
             <tbody>
@@ -279,23 +320,6 @@
         </div>
         <button class="saveButton" onclick="changeSettings()">Change Daily Settings</button>
         <span id="settingsInfo" hidden>Settings saved!</span>
-        
-        <div class="horizontal-line"></div>
-        
-        <p>Add a new container for receipes.</p>
-        <div class="input-group">
-            <label for="containerNameInput">Name:</label>
-            <input type="text" id="containerNameInput">
-            <div id="containerContainer"></div>
-        </div>
-        <div class="input-group">
-            <label for="containerWeightInput">Weight:</label>
-            <input type="text" id="containerWeightInput">
-        </div>
-        <span id="saveContainerInfo" hidden>No name given!</span>
-        <div class="settings-group">
-            <button id="saveContainerButton">Save container</button>
-        </div>
         
         <div class="horizontal-line"></div>
 
