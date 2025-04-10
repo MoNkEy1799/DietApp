@@ -187,9 +187,19 @@ button:active {
     font-family: 'Arial', sans-serif;
 }
 
+#weightTable th:nth-child(2), #weightTable td:nth-child(2) {
+    border-left: 2px solid var(--lighter_color);
+}
+
 #weightTable th {
     background-color: var(--dark_accent);
     color: var(--text_color);
     text-transform: uppercase;
     font-size: 14px;
+}
+
+#dateDisplay {
+    text-align: center;
+    display: block;
+    margin-bottom: 5px;
 }
