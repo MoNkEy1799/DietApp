@@ -8,7 +8,7 @@ subprocess.run(["sdk_platform_tools/adb.exe", "start-server"], stdout=subprocess
 result = subprocess.run(["sdk_platform_tools/adb.exe", "devices"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 device_found = False
 for line in result.stdout.splitlines():
-    tokens = line.split()
+    tokens = line.decode().split()
     if len(tokens) == 2 and tokens[1] == "device":
         device_found = True
         break
