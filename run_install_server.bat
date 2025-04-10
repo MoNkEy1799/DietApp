@@ -1,8 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
-echo Starting ADB server...
-sdk_platform_tools\adb.exe start-server
+echo Starting ADB server for port forwarding.
+sdk_platform_tools\adb.exe start-server > nul 2>&1
 set DEVICE_FOUND=
 for /f "tokens=1,2" %%a in ('sdk_platform_tools\adb.exe devices') do (
     if "%%b"=="device" (
@@ -15,6 +15,7 @@ if not defined DEVICE_FOUND (
     exit
 )
 echo Device connected and authorized.
+sdk_platform_tools\adb.exe reverse tcp:8000 tcp:8000 > nul 2>&1
 
 echo Install app under: localhost:8000
 python -m http.server 8000

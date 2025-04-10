@@ -174,24 +174,24 @@ button:active {
     display: none;
 }
 
-#weightTable {
+[id*="Table"] {
     width: 100%;
     border-collapse: collapse;
     background-color: var(--background_color);
     margin: 20px 0;
 }
 
-#weightTable th, #weightTable td {
+[id*="Table"] th, [id*="Table"] td {
     padding: 12px;
     text-align: left;
     font-family: 'Arial', sans-serif;
 }
 
-#weightTable th:nth-child(2), #weightTable td:nth-child(2) {
+[id*="Table"] th:nth-child(2), [id*="Table"] td:nth-child(2) {
     border-left: 2px solid var(--lighter_color);
 }
 
-#weightTable th {
+[id*="Table"] th {
     background-color: var(--dark_accent);
     color: var(--text_color);
     text-transform: uppercase;

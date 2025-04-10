@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nutrition Tracker</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json"/>
+    <!-- <link rel="manifest" href="manifest.json"/> -->
     <link rel="icon" href="image.svg" />
     <script src="chart.js"></script>
 </head>
 <body>
     <p id="dateDisplay"><b>Today:</b> 01.02.2025</p>
     <div id="personSelectorContainer">
-        <input type="radio" id="personL" name="person" value="louis" checked onclick="pressPersonSelect()">
-        <label for="personL">Louis</label>
+        <input type="radio" id="person1" name="person" value="person1" checked onclick="pressPersonSelect()">
+        <label for="person1">Louis</label>
 
-        <input type="radio" id="personJ" name="person" value="julia" onclick="pressPersonSelect()">
-        <label for="personJ">Julia</label>
+        <input type="radio" id="person2" name="person" value="person2" onclick="pressPersonSelect()">
+        <label for="person2">Julia</label>
     </div>
 
     <div class="tab-container">
@@ -44,7 +44,7 @@
 
         <div class="input-group">
             <label>Calories:</label>
-            <input type="number" id="kcalInput">
+            <input type="number" id="caloriesInput">
         </div>
         
         <div class="horizontal-line"></div>
@@ -74,6 +74,18 @@
             </div>
         </div>
     </div>
+
+    <table id="trackerTable">
+        <thead>
+            <tr>
+                <th>Protein</th>
+                <th>Calories</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
     
     <div id="Foods" class="tabcontent">
         <h2>Add Food</h2>
@@ -130,10 +142,10 @@
     </div>
 
     <script src="app.js" defer></script>
-    <script>
+    <!-- <script>
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("sw.js");
         }
-    </script>
+    </script> -->
 </body>
 </html>
