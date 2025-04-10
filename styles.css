@@ -274,10 +274,11 @@ button:active {
     color: var(--text_color);
     padding: 10px;
     border-radius: 5px;
+    border: 1px solid var(--text_color);
     margin-top: 5px;
     display: none;
     position: absolute;
-    width: 61%;
+    width: 60%;
     top: 95%;
     right: 0;
     z-index: 999;

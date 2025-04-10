@@ -792,6 +792,7 @@ function pressPersonSelect() {
 
 function searchSuggestions(input, container, searchArray) {
     const results = searchArray.filter(item => item.toLowerCase().includes(input.value.toLowerCase()));
+    results.sort((a, b) => a.indexOf(input) - b.indexOf(input));
     container.innerHTML = "";
     results.slice(0, 5).forEach(result => {
         const element = document.createElement("div");
@@ -809,6 +810,10 @@ function searchSuggestions(input, container, searchArray) {
     else {
         container.style.display = "none";
     }
+}
+
+function hideSuggestions(container) {
+    document.getElementById(container).style.display = "none";
 }
 
 async function saveFile() {
