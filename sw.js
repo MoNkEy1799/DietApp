@@ -1,12 +1,11 @@
-const CACHE_NAME = "dietcache-v7";
+const CACHE_NAME = "dietcache-v1";
 const CACHE_ASSETS = [
+    "/",
     "/manifest.json",
     "/index.html",
     "/styles.css",
     "/app.js",
-    "/chart.js",
-    "/image.ico",
-    "/image.svg"
+    "/chart.js"
 ];
 
 self.addEventListener("install", (event) => {
@@ -23,13 +22,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-    if (event.request.mode === "navigate") {
-        event.respondWith(
-            caches.match("/index.html").then((cachedPage) => cachedPage || fetch(event.request))
-        );
-    } else {
-        event.respondWith(
-            caches.match(event.request).then((response) => response || fetch(event.request))
-        );
-    }
+    event.respondWith(
+        caches.match(event.request).then((response) => response || fetch(event.request))
+    );
 });
