@@ -11,6 +11,17 @@ function openTab(evt, tabName) {
     }
     document.getElementById(tabName).classList.add("active");
     evt.currentTarget.classList.add("active");
+    if (tabName === "Tracker") {
+        document.getElementById("tracker-toggle").checked = false;
+        updateTracker();
+    }
+    else if (tabName === "Weight") {
+        document.getElementById("weight-toggle").checked = false;
+        updateWeight();
+    }
+    else if (tabName === "Settings") {
+        document.getElementById("settings-toggle").checked = false;
+    }
 }
 
 function dateToString(date) {
@@ -41,19 +52,25 @@ function loadData() {
     window.today = new Date();
     window.storage = JSON.parse(localStorage.getItem("storage"));
     window.receipes = JSON.parse(localStorage.getItem("receipes"));
+    window.logs = JSON.parse(localStorage.getItem("logs"));
+    window.trackerTablePerson = undefined;
+    window.weightTablePerson = undefined;
     if (window.storage === null) {
         window.storage = {
             person1: {
-                proteinYesterday: [1],
-                caloriesYesterday: [1],
-                proteinToday: [2],
-                caloriesToday: [2],
-                proteinTomorrow: [3],
-                caloriesTomorrow: [3],
+                proteinYesterday: [],
+                caloriesYesterday: [],
+                typesYesterday: [],
+                proteinToday: [],
+                caloriesToday: [],
+                typesToday: [],
+                proteinTomorrow: [],
+                caloriesTomorrow: [],
+                typesTomorrow: [],
                 proteinSetting: 120,
                 caloriesSetting: 2000,
-                weights: [2, 3],
-                dates: ["e", "f"],
+                weights: [90, 88, 86, 84],
+                dates: ["15.03.2025", "16.03.2025", "17.03.2025", "18.03.2025"],
             },
             person2: {
                 proteinYesterday: [],
@@ -69,6 +86,12 @@ function loadData() {
             },
             today: undefined,
         }
+    }
+    if (window.receipes === null) {
+        window.receipes = {};
+    }
+    if (window.logs === null) {
+        window.logs = [];
     }
 
     if (typeof window.storage.today === "undefined") {
@@ -103,16 +126,19 @@ function loadData() {
     }
     // set the new date
     window.storage.today = dateToString(window.today);
-    saveData(saveReceipes=false);
+    saveData(saveStorage=true);
     document.getElementById("dateDisplay").innerHTML = "<b>Today: </b>" + window.storage.today;
 }
 
-function saveData(saveStorage = true, saveReceipes = true) {
+function saveData(saveStorage = false, saveReceipes = false, saveLogs = false) {
     if (saveStorage) {
         localStorage.setItem("storage", JSON.stringify(window.storage));
     }
     if (saveReceipes) {
         localStorage.setItem("receipes", JSON.stringify(window.receipes));
+    }
+    if (saveLogs) {
+        localStorage.setItem("logs", JSON.stringify(window.logs));
     }
 }
 
@@ -120,92 +146,188 @@ function getPerson() {
     return document.querySelector("input[name='person']:checked").value;
 }
 
-function updateTracker(person, refillTable) {
+function addTrackerValue() {
+    const protein = Number(document.getElementById("proteinInput").value);
+    const calories = Number(document.getElementById("caloriesInput").value);
+    document.getElementById("proteinInput").value = "";
+    document.getElementById("caloriesInput").value = "";
+    if (!(protein+calories)) {
+        return;
+    }
+    // const amount = Number(document.getElementById("foodAmountInput").value);
+    // const name = document.getElementById("foodNameInput").value;
+    const person = getPerson();
     const date = document.getElementById("dateSelector").value;
-    const protein = window.storage[person]["protein"+date].reduce((acc, val) => acc + val, 0);
-    const calories = window.storage[person]["calories"+date].reduce((acc, val) => acc + val, 0);
-    document.getElementById("remainingProtein").innerHTML = window.storage[person].proteinSetting - protein;
-    document.getElementById("remainingCalories").innerHTML = window.storage[person].caloriesSetting - calories;
-    const table = document.getElementById("trackerTable");
-    const root = getComputedStyle(document.documentElement);
-    const lightColor = root.getPropertyValue('--lighter_color');
-    if (refillTable) {
-        table.getElementsByTagName("tbody")[0].innerHTML = "";
-        for (let day of ["Yesterday", "Today", "Tomorrow"]) {
-            const proteinList = window.storage[person]["protein"+day];
-            const calorieList = window.storage[person]["calories"+day];
+    const type = "Direct value input";
+    window.storage[person]["protein"+date].push(protein);
+    window.storage[person]["calories"+date].push(calories);
+    window.storage[person]["types"+date].push(type);
+    saveData(saveStorage=true);
+    logCommand(`Tracker: added value for ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${protein}, Calories: ${calories}, Type: ${type}`);
+    updateTracker();
+    window.trackerTablePerson = undefined;
+    if (document.getElementById("tracker-toggle").checked) {
+        fillTrackerTable();
+    }
+}
+
+function undoTracker() {
+    const person = getPerson();
+    const date = document.getElementById("dateSelector").value;
+    const protein = window.storage[person]["protein"+date].pop();
+    const calories = window.storage[person]["calories"+date].pop();
+    const type = window.storage[person]["types"+date].pop();
+    saveData(saveStorage=true);
+    logCommand(`Tracker: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${protein}, Calories: ${calories}, Type: ${type}`);
+    updateTracker();
+    window.trackerTablePerson = undefined;
+    if (document.getElementById("tracker-toggle").checked) {
+        fillTrackerTable();
+    }
+}
+
+function updateTracker() {
+    const person = getPerson();
+    const date = document.getElementById("dateSelector").value;
+    const sumProtein = window.storage[person]["protein"+date].reduce((acc, val) => acc + val, 0);
+    const sumCalories = window.storage[person]["calories"+date].reduce((acc, val) => acc + val, 0);
+    document.getElementById("remainHeader").innerHTML = "Remaining For " + date + " :";
+    document.getElementById("remainingProtein").innerHTML = window.storage[person].proteinSetting - sumProtein;
+    document.getElementById("remainingCalories").innerHTML = window.storage[person].caloriesSetting - sumCalories;
+}
+
+function fillTrackerTable() {
+    const person = getPerson();
+    if (person === window.trackerTablePerson) {
+        return;
+    }
+    window.trackerTablePerson = person;
+    const table = document.getElementById("trackerTable").getElementsByTagName("tbody")[0];
+    const lightColor = getComputedStyle(document.documentElement).getPropertyValue('--lighter_color');
+    table.innerHTML = "";
+    for (let day of ["Yesterday", "Today", "Tomorrow"]) {
+        const proteinList = window.storage[person]["protein"+day];
+        const calorieList = window.storage[person]["calories"+day];
+        const typeList = window.storage[person]["types"+day];
+        const row = table.insertRow();
+        row.style.backgroundColor = lightColor;
+        const cell = row.insertCell(0);
+        cell.colSpan = 3;
+        cell.textContent = day;
+        if (proteinList.length === 0) {
             const row = table.insertRow();
-            row.style.backgroundColor = lightColor;
-            const cell = row.insertCell(0);
-            cell.colSpan = 3;
-            cell.textContent = day;
+            row.insertCell(0).textContent = "-";
+            row.insertCell(1).textContent = "-";
+            row.insertCell(2).textContent = "-";
+        }
+        else {
             for (let i = 0; i < proteinList.length; i++) {
                 const row = table.insertRow();
                 row.insertCell(0).textContent = proteinList[i];
                 row.insertCell(1).textContent = calorieList[i];
+                row.insertCell(2).textContent = typeList[i];
             }
         }
-    }
-    else {
-        let rowNum = 0;
-        for (let day of ["Yesterday", "Today", "Tomorrow"]) {
-            rowNum += window.storage[person]["protein"+day].length;
-            if (date === day) {
-                break;
-            }
-        }
-        const row = table.insertRow(rowNum);
-        const index = window.storage[person]["protein"+date].length - 1;
-        row.insertCell(0).textContent = window.storage[person]["protein"+date][index];
-        row.insertCell(1).textContent = window.storage[person]["calories"+date][index];
     }
 }
 
-function updateWeight(person, updatePlot) {
-    const table = document.getElementById("weightTable");
-    table.getElementsByTagName("tbody")[0].innerHTML = "";
-    for (let i = 0; i < window.storage[person].dates.length; i++) {
+function addWeightValue() {
+    const weight = Number(document.getElementById("weightInput").value);
+    document.getElementById("weightInput").value = "";
+    if (!weight) {
+        return;
+    }
+    const person = getPerson();
+    window.storage[person].dates.push(window.storage.today);
+    window.storage[person].weights.push(weight);
+    saveData(saveStorage=true);
+    logCommand(`Weight: added value for ${document.querySelector(`label[for=${person}]`).innerHTML}. Weight: ${weight}, Date: ${window.storage.today}`);
+    updateWeight();
+    window.weightTablePerson = undefined;
+    if (document.getElementById("weight-toggle").checked) {
+        fillWeightTable();
+    }
+}
+
+function undoWeight() {
+    const person = getPerson();
+    const date = window.storage[person].dates.pop();
+    const weight = window.storage[person].weights.pop();
+    saveData(saveStorage=true);
+    logCommand(`Weight: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML}. Weight: ${weight}, Date: ${date}`);
+    updateWeight();
+    window.weightTablePerson = undefined;
+    if (document.getElementById("weight-toggle").checked) {
+        fillWeightTable();
+    }
+}
+
+function updateWeight() {
+    const person = getPerson();
+    const weights = window.storage[person].weights;
+    const diff = -(weights[weights.length-1] - weights[0]);
+    document.getElementById("weightLoss").innerHTML = isNaN(diff) ? "0 kg" : diff + " kg";
+    weightChart.data.labels = window.storage[person].dates;
+    weightChart.data.datasets[0].data = window.storage[person].weights;
+    weightChart.update();
+}
+
+function fillWeightTable() {
+    const person = getPerson();
+    if (person === window.weightTablePerson) {
+        return;
+    }
+    window.weightTablePerson = person;
+    const table = document.getElementById("weightTable").getElementsByTagName("tbody")[0];
+    table.innerHTML = "";
+    for (let i = 0; i < window.storage[person].weights.length; i++) {
         const row = table.insertRow();
         row.insertCell(0).textContent = window.storage[person].dates[i];
-        row.insertCell(1).textContent = window.storage[person].weights[i];
-    }
-    if (updatePlot) {
-        weightChart.data.labels = window.storage[person].dates;
-        weightChart.data.datasets[0] = window.storage[person].weights;
-        weightChart.update();
+        row.insertCell(1).textContent = window.storage[person].weights[i].toFixed(1);
     }
 }
 
-function addTrackerValue() {
-    const protein = Number(document.getElementById("proteinInput").value());
-    const calories = Number(document.getElementById("caloriesInput").value());
-    // const amount = Number(document.getElementById("foodAmountInput").value());
-    // const name = document.getElementById("foodNameInput").value();
-    const person = getPerson();
-    const daySelect = document.getElementById("dateSelector").value();
-    window.storage[person]["protein" + daySelect].push(protein);
-    window.storage[person]["calories" + daySelect].push(calories);
-    updateTracker(person, false);
+function logCommand(log) {
+    window.logs.unshift(log);
+    if (window.logs.length > 20) {
+        window.logs.pop();
+    }
+    saveData(saveLogs=true);
+}
+
+function fillSettingsTable() {
+    if (!document.getElementById("settings-toggle").checked) {
+        return;
+    }
+    const table = document.getElementById("settingsTable").getElementsByTagName("tbody")[0];
+    table.innerHTML = "";
+    for (let i = 0; i < window.logs.length; i++) {
+        const row = table.insertRow();
+        row.insertCell(0).textContent = window.logs[i];
+    }
 }
 
 function pressPersonSelect() {
     const activeTab = document.querySelector('.tablink.active').value;
-    const person = getPerson();
     if (activeTab === "tracker") {
-        updateTracker(person, true);
+        updateTracker();
+        document.getElementById("tracker-toggle").checked = false;
     }
     else if (activeTab === "weight") {
-        updateWeight(person, true);
+        updateWeight();
+        document.getElementById("weight-toggle").checked = false;
     }
     else if (activeTab === "settings") {
-        updateSettings(person);
+        
     }
 }
 
+// remove pull-down refresh on mobile
+window.addEventListener('touchmove', function (e) {e.preventDefault();}, { passive: false });
+  
 // first thing is load data from local storage
 loadData();
-updateTracker("person1", true);
-updateWeight("person1", false);
+updateTracker();
 
 const weightChart = new Chart(document.getElementById('scatter').getContext('2d'), {
     type: 'line',
@@ -220,6 +342,11 @@ const weightChart = new Chart(document.getElementById('scatter').getContext('2d'
         plugins: {
             legend: {
                 display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(item) {return item.raw.toFixed(1) + " kg";},
+                }
             }
         },
         scales: {
