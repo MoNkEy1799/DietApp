@@ -1057,6 +1057,8 @@ function showSettingsPrompt(file) {
             document.getElementById("dailyProtein").placeholder = window.storage[window.person].proteinSetting;
             document.getElementById("dailyCalories").placeholder = window.storage[window.person].caloriesSetting;
             document.getElementById("weightGoal").placeholder = window.storage[window.person].weightGoal;
+            window.trackerTablePerson = undefined;
+            window.weightTablePerson = undefined;
             prompt.innerHTML = `<p>Data was successfully loaded from '${file.name}'!</p>`;
             prompt.style.display = "block";
             setTimeout(() => {hidePrompt("settings");}, 2000);
