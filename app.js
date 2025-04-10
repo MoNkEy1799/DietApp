@@ -40,6 +40,7 @@ function checkDateDifference(date, diff) {
 function loadData() {
     window.today = new Date();
     window.storage = JSON.parse(localStorage.getItem("storage"));
+    window.receipes = JSON.parse(localStorage.getItem("receipes"));
     if (window.storage === null) {
         window.storage = {
             louis: {
@@ -66,7 +67,6 @@ function loadData() {
                 weights: [],
                 dates: [],
             },
-            receipes: [],
             today: undefined,
         }
     }
@@ -76,7 +76,6 @@ function loadData() {
     }
     // loading on same day --> keep data, do nothing
     if (checkDateDifference(window.today, 0)) {
-
     }
     // loading on next day -> today is becoming yesterday and tomorrow is becoming today
     else if (checkDateDifference(window.today, 1)) {
@@ -104,12 +103,17 @@ function loadData() {
     }
     // set the new date
     window.storage.today = dateToString(window.today);
-    saveData();
+    saveData(saveReceipes=false);
     document.getElementById("dateDisplay").innerHTML = "<b>Today: </b>" + window.storage.today;
 }
 
-function saveData() {
-    localStorage.setItem("data", JSON.stringify(window.storage));
+function saveData(saveStorage = true, saveReceipes = true) {
+    if (saveStorage) {
+        localStorage.setItem("storage", JSON.stringify(window.storage));
+    }
+    if (saveReceipes) {
+        localStorage.setItem("receipes", JSON.stringify(window.receipes));
+    }
 }
 
 function updateTracker(person) {
