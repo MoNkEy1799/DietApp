@@ -172,9 +172,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>-</td>
-                        </tr>
                     </tbody>
                 </table>
 
@@ -246,7 +243,7 @@
             </tbody>
         </table>
         <table id="receipeListTable">
-            <thead>
+            <thead onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 <tr>
                     <th>Receipes</th>
                 </tr>
@@ -255,7 +252,7 @@
             </tbody>
         </table>
         <table id="containerListTable">
-            <thead>
+            <thead onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 <tr>
                     <th>Containers</th>
                 </tr>
@@ -317,6 +314,8 @@
     </div>
     
     <div id="Settings" class="tabcontent">
+        <div class="overlay" id="settingsOverlay" onclick="hidePrompt('settings')"></div>
+        <div class="prompt" id="settingsPrompt"></div>
         <h2>Settings</h2>
 
         <div class="horizontal-line"></div>
@@ -333,7 +332,7 @@
         
         <div class="horizontal-line"></div>
 
-        <p>Save and load all stored data to a file.</p>
+        <p>Save and load all stored data to/from a file.</p>
         <div class="settings-group">
             <button onclick="saveFile()">Save Data to File</button>
             <button onclick="readFile()">Load Data from File</button>

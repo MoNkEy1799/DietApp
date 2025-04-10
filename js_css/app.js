@@ -172,7 +172,7 @@ function addTrackerValue() {
     let type = "Direct input";
     if (!(protein+calories)) {
         if (!name || !amount) {
-            info.innerHTML = "Enter a name and amount!"
+            info.innerHTML = "Enter a name and amount!";
             info.hidden = false;
             setTimeout(() => {info.hidden = true;}, 2000);
             return;
@@ -273,13 +273,13 @@ function addNewFood() {
     const name = nameInput.value.trim();
     const info = document.getElementById("newFoodInfo");
     if (!name) {
-        info.innerHTML = "No Name given!"
+        info.innerHTML = "No Name given!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     else if (name in window.receipes) {
-        info.innerHTML = "Name already exists!"
+        info.innerHTML = "Name already exists!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
@@ -289,7 +289,7 @@ function addNewFood() {
     const caloriesInput = document.getElementById("newFoodCalories");
     const calories = Number(caloriesInput.value);
     if (!calories) {
-        info.innerHTML = "No calories given!"
+        info.innerHTML = "No calories given!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
@@ -336,13 +336,13 @@ function addToReceipe() {
     const name = nameInput.value;
     const info = document.getElementById("addFoodInfo");
     if (!name || !amount) {
-        info.innerHTML = "Enter a name and amount!"
+        info.innerHTML = "Enter a name and amount!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     if (!(name in window.receipes)) {
-        info.innerHTML = "Food name not found!"
+        info.innerHTML = "Food name not found!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
@@ -353,9 +353,6 @@ function addToReceipe() {
     logCommand(`Receipe: added food to list. Name: ${name}, Amount: ${Math.round(amount)}`);
 
     const table = document.getElementById("receipeTable").getElementsByTagName("tbody")[0];
-    if (table.rows[0] && table.rows[0].cells[0].textContent === "-") {
-        table.deleteRow(0);
-    }
     const cell = table.insertRow().insertCell(0);
     const div = document.createElement("div");
     const text = document.createElement("span");
@@ -364,13 +361,10 @@ function addToReceipe() {
     button.classList.add("table-entry-button");
     button.innerHTML = "&times";
     button.onclick = function () {
-        const confirm = window.confirm(`Do you want to delete the food from the receipe: '${name}'?`)
-        if (confirm) {
-            const rowIndex = this.closest("tr").rowIndex - 1;
-            table.deleteRow(rowIndex);
-            window.foodList.splice(rowIndex, 1);
-            logCommand(`Receipe: removed food from list. Name: ${name}, Amount: ${Math.round(amount)}`);
-        }
+        const rowIndex = this.closest("tr").rowIndex - 1;
+        table.deleteRow(rowIndex);
+        window.foodList.splice(rowIndex, 1);
+        logCommand(`Receipe: removed food from list. Name: ${name}, Amount: ${Math.round(amount)}`);
     };
     text.textContent = `${Math.round(amount)}g ${name}`;
     div.appendChild(text);
@@ -387,31 +381,31 @@ function addNewReceipe() {
     const weight = Number(weightInput.value);
     const info = document.getElementById("saveReceipeInfo");
     if (!name) {
-        info.innerHTML = "No Name given!"
+        info.innerHTML = "No Name given!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     if (name in window.receipes) {
-        info.innerHTML = "Name already exists!"
+        info.innerHTML = "Name already exists!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     if (!container) {
-        info.innerHTML = "No container given!"
+        info.innerHTML = "No container given!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     if (!(container in window.containers)) {
-        info.innerHTML = "Container not found!"
+        info.innerHTML = "Container not found!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     if (!weight) {
-        info.innerHTML = "No weight given!"
+        info.innerHTML = "No weight given!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
@@ -426,7 +420,7 @@ function addNewReceipe() {
         const food = window.receipes[entry.name];
         totalProtein += food.protein / 100 * entry.amount;
         totalCalories += food.calories / 100 * entry.amount;
-    })
+    });
     const weightDiff = weight - window.containers[container];
     totalProtein = totalProtein / weightDiff * 100;
     totalCalories = totalCalories / weightDiff * 100;
@@ -469,15 +463,13 @@ function fillReceipeContainerTable() {
     foodTable.innerHTML = "";
     const receipeTable = document.getElementById("receipeListTable").getElementsByTagName("tbody")[0];
     receipeTable.innerHTML = "";
-    let table, type;
+    let table;
     for (const [name, entry] of Object.entries(window.receipes)) {
         if ("receipe" in entry) {
             table = receipeTable;
-            type = "receipe";
         }
         else {
             table = foodTable;
-            type = "food";
         }
         const newRow = table.insertRow();
         const cell = newRow.insertCell(0);
@@ -666,13 +658,13 @@ function addContainer() {
     const name = nameInput.value.trim();
     const info = document.getElementById("saveContainerInfo");
     if (!name || !weight) {
-        info.innerHTML = "Enter a name and weight!"
+        info.innerHTML = "Enter a name and weight!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
     }
     if (name in window.containers) {
-        info.innerHTML = "Name already exists!"
+        info.innerHTML = "Name already exists!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
         return;
@@ -691,23 +683,15 @@ function addContainer() {
     const cell = newRow.insertCell(0);
     const div = document.createElement("div");
     const text = document.createElement("span");
-    const button = document.createElement("button");
     div.classList.add("table-entry");
-    button.classList.add("table-entry-button");
-    button.innerHTML = "&times";
-    button.onclick = function () {
-        const confirm = window.confirm(`Do you want to delete the container: '${name}'?`)
-        if (confirm) {
-            table.deleteRow(this.closest("tr").rowIndex - 1);
-            delete window.containers[name];
-            saveData(saveStorage = false, saveReceipes = false, saveLogs = false, saveContainers = true);
-            logCommand(`Container: removed. Name: ${name}, Weight: ${Math.round(weight)}`);
-        }
-    };
     text.textContent = name;
-    text.onclick = () => showFoodPrompt(name);
+    text.onclick = function() {
+        showFoodPrompt(name, this.closest("tr").rowIndex);
+    };
+    div.onclick = function() {
+        showFoodPrompt(name, this.closest("tr").rowIndex);
+    };
     div.appendChild(text);
-    div.appendChild(button);
     cell.appendChild(div);
 
     const rows = Array.from(table.rows);
@@ -791,12 +775,17 @@ async function saveFile() {
             "storage": window.storage,
             "receipes": window.receipes,
             "logs": window.logs,
-            "containers": window.containers
+            "containers": window.containers,
         };
         const writable = await fileHandle.createWritable();
         await writable.write(JSON.stringify(data));
         await writable.close();
-        window.alert(`File saved successfully to '${fileHandle.name}'!`);
+
+        document.getElementById("settingsOverlay").style.display = "block";
+        const prompt = document.getElementById("settingsPrompt");
+        prompt.innerHTML = `<p>Data saved successfully to '${fileHandle.name}'!</p>`;
+        prompt.style.display = "block";
+        setTimeout(() => {hidePrompt("settings");}, 2000);
     } catch (err) {
         window.alert(`File save failed due to the following error: ${err}`);
     }
@@ -806,19 +795,7 @@ async function readFile() {
     try {
         const [fileHandle] = await window.showOpenFilePicker();
         const file = await fileHandle.getFile();
-        const text = await file.text();
-        const confirm = window.confirm(`Do you want to overwrite the app data with the file: '${file.name}'?`)
-        if (confirm) {
-            const loadedData = JSON.parse(text);
-            window.storage = loadedData.storage;
-            window.storage.today = dateToString(window.today);
-            window.receipes = loadedData.receipes;
-            window.logs = loadedData.logs;
-            window.containers = loadedData.containers;
-            saveData(saveStorage=true, saveReceipes=true, saveLogs=true, saveContainers = true);
-            window.alert(`Data was successfully loaded from '${file.name}'!`)
-        }
-        fillReceipeContainerTable();
+        showSettingsPrompt(file);
     } catch (err) {
         window.alert(`File reading failed due to the following error: ${err}`);
     }
@@ -839,7 +816,7 @@ function showFoodPrompt(item, deleteIndex) {
             prompt.innerHTML += "<h4>Receipe list:</h4>";
             receipe.receipe.forEach((entry) => {
                 prompt.innerHTML += `<p>• ${entry.amount}g ${entry.name}</p>`;
-            })
+            });
         }
     }
     else if (item in window.containers) {
@@ -893,7 +870,7 @@ function showFoodPrompt(item, deleteIndex) {
         div.appendChild(cancel);
         prompt.appendChild(div);
         prompt.style.display = "block";
-    };
+    }
     prompt.appendChild(button);
     prompt.style.display = "block";
 }
@@ -951,6 +928,43 @@ function showWeightPrompt() {
     prompt.style.display = "block";
 }
 
+function showSettingsPrompt(file) {
+    document.getElementById("settingsOverlay").style.display = "block";
+    const prompt = document.getElementById("settingsPrompt");
+    prompt.innerHTML = `<p>Do you want to overwrite the app data with the file: '${file.name}'?</p>`;
+    const confirm = document.createElement("button");
+    confirm.textContent = "Confirm";
+    confirm.onclick = async function() {
+        try {
+            const text = await file.text();
+            const loadedData = JSON.parse(text);
+            window.storage = loadedData.storage;
+            window.storage.today = dateToString(window.today);
+            window.receipes = loadedData.receipes;
+            window.logs = loadedData.logs;
+            window.containers = loadedData.containers;
+            saveData(saveStorage=true, saveReceipes=true, saveLogs=true, saveContainers = true);
+            prompt.innerHTML = `<p>Data was successfully loaded from '${file.name}'!</p>`;
+            prompt.style.display = "block";
+            setTimeout(() => {hidePrompt("settings");}, 2000);
+            fillReceipeContainerTable();
+        } catch (err) {
+            window.alert(`File reading failed due to the following error: ${err}`);
+        }
+    }
+    const cancel = document.createElement("button");
+    cancel.textContent = "Cancel";
+    cancel.onclick = () => {
+        hidePrompt("settings");
+    }
+    const div = document.createElement("div");
+    div.classList.add("settings-group");
+    div.appendChild(confirm);
+    div.appendChild(cancel);
+    prompt.appendChild(div);
+    prompt.style.display = "block";
+}
+
 function hidePrompt(name) {
     document.getElementById(`${name}Overlay`).style.display = "none";
     document.getElementById(`${name}Prompt`).style.display = "none";
@@ -970,7 +984,7 @@ document.getElementById("foodNameInput").addEventListener("input", () => {
         container.style.display = "none";
     }
 });
-document.getElementById("suggestionsContainer").addEventListener("mousedown", () => {suggestionClick = true;})
+document.getElementById("suggestionsContainer").addEventListener("mousedown", () => {suggestionClick = true;});
 document.getElementById("toReceipeNameInput").addEventListener("input", () => {
     const input = document.getElementById("toReceipeNameInput");
     const container = document.getElementById("receipeContainer");
@@ -981,7 +995,7 @@ document.getElementById("toReceipeNameInput").addEventListener("input", () => {
         container.style.display = "none";
     }
 });
-document.getElementById("receipeContainer").addEventListener("mousedown", () => {suggestionClick = true;})
+document.getElementById("receipeContainer").addEventListener("mousedown", () => {suggestionClick = true;});
 document.getElementById("containerInput").addEventListener("input", () => {
     const input = document.getElementById("containerInput");
     const container = document.getElementById("containerContainer");
@@ -992,7 +1006,7 @@ document.getElementById("containerInput").addEventListener("input", () => {
         container.style.display = "none";
     }
 });
-document.getElementById("containerContainer").addEventListener("mousedown", () => {suggestionClick = true;})
+document.getElementById("containerContainer").addEventListener("mousedown", () => {suggestionClick = true;});
 
 const weightChart = new Chart(document.getElementById('scatter').getContext('2d'), {
     type: 'line',
@@ -1000,13 +1014,13 @@ const weightChart = new Chart(document.getElementById('scatter').getContext('2d'
         labels: window.storage.person1.dates,
         datasets: [{
             data: window.storage.person1.weights,
-            borderWidth: 1
-        }]
+            borderWidth: 1,
+        }],
     },
     options: {
         plugins: {
             legend: {
-                display: false
+                display: false,
             },
             tooltip: {
                 callbacks: {
@@ -1018,7 +1032,7 @@ const weightChart = new Chart(document.getElementById('scatter').getContext('2d'
             x: {
                 ticks: {
                     maxRotation: 60,
-                    minRotation: 60
+                    minRotation: 60,
                 }
             }
         }
