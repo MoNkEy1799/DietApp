@@ -93,6 +93,20 @@ function loadData() {
     if (window.logs === null) {
         window.logs = [];
     }
+    window.containers = {
+        "Pfanne (klein)": 666,
+        "Pfanne (mittel)": 882,
+        "Pfanne (groß)": 1147,
+        "Pfanne (tief)": 1288,
+        "Topf (klein)": 693,
+        "Topf (mittel)": 1005,
+        "Topf (groß)": 1304,
+        "Topf alt (Soße)": 602,
+        "Topf alt (klein)": 846,
+        "Topf alt (mittel)": 1114,
+        "Topf alt (groß)": 1221,
+        "Topf alt (tief)": 1708,
+    }
 
     if (typeof window.storage.today === "undefined") {
         window.storage.today = dateToString(window.today);
@@ -126,7 +140,7 @@ function loadData() {
     }
     // set the new date
     window.storage.today = dateToString(window.today);
-    saveData(saveStorage=true);
+    saveData(saveStorage=true, saveReceipes=false, saveLogs=false);
     document.getElementById("dateDisplay").innerHTML = "<b>Today: </b>" + window.storage.today;
     document.getElementById("dailyProtein").placeholder = window.storage.person1.proteinSetting;
     document.getElementById("dailyCalories").placeholder = window.storage.person1.caloriesSetting;
@@ -150,22 +164,46 @@ function getPerson() {
 }
 
 function addTrackerValue() {
-    const protein = Number(document.getElementById("proteinInput").value);
-    const calories = Number(document.getElementById("caloriesInput").value);
-    document.getElementById("proteinInput").value = "";
-    document.getElementById("caloriesInput").value = "";
+    let protein = Number(document.getElementById("proteinInput").value);
+    let calories = Number(document.getElementById("caloriesInput").value);
+    const amount = Number(document.getElementById("foodAmountInput").value);
+    const name = document.getElementById("foodNameInput").value;
+    const info = document.getElementById("trackerInfo");
+    let type = "Direct value input";
     if (!(protein+calories)) {
+        if (!name || !amount) {
+            info.innerHTML = "Enter a name and amount!"
+            info.hidden = false;
+            setTimeout(() => {document.getElementById("trackerInfo").hidden = true;}, 2000);
+            return;
+        }
+        if (!(name in window.receipes)) {
+            info.innerHTML = "Food name not found!"
+            info.hidden = false;
+            setTimeout(() => {document.getElementById("trackerInfo").hidden = true;}, 2000);
+            return;
+        }
+        protein = window.receipes[name].protein / 100 * amount;
+        calories = window.receipes[name].calories / 100 * amount;
+        type = `${amount}g ${name}`;
+    }
+    else if (name || amount) {
+        info.innerHTML = "Enter either a value or a food!";
+        info.hidden = false;
+        setTimeout(() => {document.getElementById("trackerInfo").hidden = true;}, 2000);
         return;
     }
-    // const amount = Number(document.getElementById("foodAmountInput").value);
-    // const name = document.getElementById("foodNameInput").value;
+
+    document.getElementById("proteinInput").value = "";
+    document.getElementById("caloriesInput").value = "";
+    document.getElementById("foodAmountInput").value = "";
+    document.getElementById("foodNameInput").value = "";
     const person = getPerson();
     const date = document.getElementById("dateSelector").value;
-    const type = "Direct value input";
     window.storage[person]["protein"+date].push(protein);
     window.storage[person]["calories"+date].push(calories);
     window.storage[person]["types"+date].push(type);
-    saveData(saveStorage=true);
+    saveData(saveStorage=true, saveReceipes = false, saveLogs = false);
     logCommand(`Tracker: added value for ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${protein}, Calories: ${calories}, Type: ${type}`);
     updateTracker();
     window.trackerTablePerson = undefined;
@@ -180,7 +218,7 @@ function undoTracker() {
     const protein = window.storage[person]["protein"+date].pop();
     const calories = window.storage[person]["calories"+date].pop();
     const type = window.storage[person]["types"+date].pop();
-    saveData(saveStorage=true);
+    saveData(saveStorage=true, saveReceipes = false, saveLogs = false);
     logCommand(`Tracker: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML} (${date}). Protein: ${protein}, Calories: ${calories}, Type: ${type}`);
     updateTracker();
     window.trackerTablePerson = undefined;
@@ -195,8 +233,8 @@ function updateTracker() {
     const sumProtein = window.storage[person]["protein"+date].reduce((acc, val) => acc + val, 0);
     const sumCalories = window.storage[person]["calories"+date].reduce((acc, val) => acc + val, 0);
     document.getElementById("remainHeader").innerHTML = "Remaining For " + date + " :";
-    document.getElementById("remainingProtein").innerHTML = window.storage[person].proteinSetting - sumProtein;
-    document.getElementById("remainingCalories").innerHTML = window.storage[person].caloriesSetting - sumCalories;
+    document.getElementById("remainingProtein").innerHTML = Math.round(window.storage[person].proteinSetting - sumProtein);
+    document.getElementById("remainingCalories").innerHTML = Math.round(window.storage[person].caloriesSetting - sumCalories);
 }
 
 function fillTrackerTable() {
@@ -264,7 +302,7 @@ function addNewFood() {
     proteinInput.value = "";
     caloriesInput.value = "";
     window.receipes[name] = {"protein": protein, "calories": calories};
-    saveData(saveReceipes=true);
+    saveData(saveStorage = false, saveReceipes = true, saveLogs = false);
     logCommand(`Food: added new food/receipe. Name: ${name}, Protein: ${protein}, Calories: ${calories}`);
     // updateWeight();
     // window.weightTablePerson = undefined;
@@ -277,7 +315,7 @@ function undoNewFood() {
     const person = getPerson();
     const date = window.storage[person].dates.pop();
     const weight = window.storage[person].weights.pop();
-    saveData(saveStorage=true);
+    saveData(saveStorage = true, saveReceipes = false, saveLogs = false);
     logCommand(`Weight: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML}. Weight: ${weight}, Date: ${date}`);
     updateWeight();
     window.weightTablePerson = undefined;
@@ -312,7 +350,7 @@ function addWeightValue() {
     const person = getPerson();
     window.storage[person].dates.push(date);
     window.storage[person].weights.push(weight);
-    saveData(saveStorage=true);
+    saveData(saveStorage = true, saveReceipes = false, saveLogs = false);
     logCommand(`Weight: added value for ${document.querySelector(`label[for=${person}]`).innerHTML}. Date: ${date}, Weight: ${weight}`);
     updateWeight();
     window.weightTablePerson = undefined;
@@ -325,7 +363,7 @@ function undoWeight() {
     const person = getPerson();
     const date = window.storage[person].dates.pop();
     const weight = window.storage[person].weights.pop();
-    saveData(saveStorage=true);
+    saveData(saveStorage=true, saveReceipes = false, saveLogs = false);
     logCommand(`Weight: removed value from ${document.querySelector(`label[for=${person}]`).innerHTML}. Weight: ${weight}, Date: ${date}`);
     updateWeight();
     window.weightTablePerson = undefined;
@@ -364,7 +402,7 @@ function logCommand(log) {
     if (window.logs.length > 20) {
         window.logs.pop();
     }
-    saveData(saveLogs=true);
+    saveData(saveStorage = false, saveReceipes = false, saveLogs = true);
 }
 
 function changeSettings() {
@@ -375,7 +413,7 @@ function changeSettings() {
     calories = calories ? calories : window.storage[person].caloriesSetting;
     window.storage[person].proteinSetting = protein;
     window.storage[person].caloriesSetting = calories;
-    saveData(saveStorage=true);
+    saveData(saveStorage = true, saveReceipes = false, saveLogs = false);
     logCommand(`Settings: changed dailys for ${document.querySelector(`label[for=${person}]`).innerHTML}. Protein: ${protein}, Calories: ${calories}`);
     const info = document.getElementById("settingsInfo");
     info.hidden = false;
@@ -411,18 +449,15 @@ function pressPersonSelect() {
     }
 }
 
-function searchSuggestions(input) {
-    const searchArray = Object.keys(window.receipes);
-    const searchInput = document.getElementById("foodNameInput");
-    const container = document.getElementById("suggestionsContainer");
-    const results = searchArray.filter(item => item.toLowerCase().includes(input.toLowerCase()));
+function searchSuggestions(input, container, searchArray) {
+    const results = searchArray.filter(item => item.toLowerCase().includes(input.value.toLowerCase()));
     container.innerHTML = "";
     results.slice(0, 5).forEach(result => {
         const element = document.createElement("div");
         element.classList.add("suggestion");
         element.textContent = result;
         element.onclick = () => {
-            searchInput.value = result;
+            input.value = result;
             container.style.display = "none";
         }
         container.appendChild(element);
@@ -478,12 +513,43 @@ async function readFile() {
 loadData();
 updateTracker();
 document.getElementById("foodNameInput").addEventListener("input", () => {
-    const input = document.getElementById("foodNameInput").value;
-    if (input) {
-        searchSuggestions(input);
+    const input = document.getElementById("foodNameInput");
+    const container = document.getElementById("suggestionsContainer");
+    if (input.value) {
+        searchSuggestions(input, container, Object.keys(window.receipes));
     }
     else {
-        document.getElementById("suggestionsContainer").style.display = "none";
+        container.style.display = "none";
+    }
+});
+document.getElementById("removeInput").addEventListener("input", () => {
+    const input = document.getElementById("removeInput");
+    const container = document.getElementById("removeContainer");
+    if (input.value) {
+        searchSuggestions(input, container, Object.keys(window.receipes));
+    }
+    else {
+        container.style.display = "none";
+    }
+});
+document.getElementById("toReceipeNameInput").addEventListener("input", () => {
+    const input = document.getElementById("toReceipeNameInput");
+    const container = document.getElementById("receipeContainer");
+    if (input.value) {
+        searchSuggestions(input, container, Object.keys(window.receipes));
+    }
+    else {
+        container.style.display = "none";
+    }
+});
+document.getElementById("containerInput").addEventListener("input", () => {
+    const input = document.getElementById("containerInput");
+    const container = document.getElementById("containerContainer");
+    if (input.value) {
+        searchSuggestions(input, container, Object.keys(window.containers));
+    }
+    else {
+        container.style.display = "none";
     }
 });
 

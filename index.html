@@ -57,6 +57,7 @@
             <input type="text" id="foodNameInput">
             <div id="suggestionsContainer"></div>
         </div>
+        <span id="trackerInfo" hidden>Enter either a value or a food!</span>
         
         <div class="horizontal-line"></div>
         
@@ -120,10 +121,65 @@
         <span id="newFoodInfo" hidden>Name already exists!</span>
         <div class="settings-group">
             <button id="addFoodButton" onclick="addNewFood()">Add Food</button>
-            <button id="undoFoodButton">Undo</button>
+        </div>
+        
+        <div class="horizontal-line"></div>
+
+        <p>Create a new receipe with different foods.</p>
+        <div class="input-group">
+            <label>Amount:</label>
+            <input type="number" id="receipeAmountInput">
+        </div>
+        <div class="input-group">
+            <label>Food Name:</label>
+            <input type="text" id="toReceipeNameInput">
+            <div id="receipeContainer"></div>
+        </div>
+        <div class="settings-group">
+            <button id="addToReceipeButton">Add to Receipe</button>
+        </div>
+        <table id="receipeTable">
+            <thead>
+                <tr>
+                    <th>Food</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>-</td>
+                    <td>-</tr>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="input-group">
+            <label>Receipe Name:</label>
+            <input type="number" id="receipeNameInput">
+        </div>
+        <div class="input-group">
+            <label>Container:</label>
+            <input type="text" id="containerInput">
+            <div id="containerContainer"></div>
+        </div>
+        <div class="input-group">
+            <label>Total weight:</label>
+            <input type="text" id="totalWeight">
+        </div>
+        <div class="settings-group">
+            <button id="saveReceipeButton">Save receipe</button>
         </div>
 
         <div class="horizontal-line"></div>
+
+        <div class="input-group">
+            <label>Food Name:</label>
+            <input type="text" id="removeInput">
+            <div id="removeContainer"></div>
+        </div>
+        <div class="settings-group">
+            <button id="undoFoodButton">Remove Food</button>
+        </div>
 
     </div>
     
