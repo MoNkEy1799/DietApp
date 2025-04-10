@@ -203,7 +203,7 @@ function addTrackerValue() {
     window.storage[window.person]["calories"+date].push(calories);
     window.storage[window.person]["types"+date].push(type);
     saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false);
-    logCommand(`Tracker: added value for ${document.querySelector(`label[for=${window.person}]`).innerHTML} (${date}). Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}, Type: ${type}`);
+    logCommand(`Tracker: added value for ${document.querySelector(`label[for=${window.person}]`).innerHTML} (${date}). Protein: ${protein.toFixed(1)}, Calories: ${Math.round(calories)}, Type: ${type}`);
     updateTracker();
     window.trackerTablePerson = undefined;
     if (document.getElementById("tracker-toggle").checked) {
@@ -217,7 +217,7 @@ function undoTracker() {
     const calories = window.storage[window.person]["calories"+date].pop();
     const type = window.storage[window.person]["types"+date].pop();
     saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false);
-    logCommand(`Tracker: removed value from ${document.querySelector(`label[for=${window.person}]`).innerHTML} (${date}). Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}, Type: ${type}`);
+    logCommand(`Tracker: removed value from ${document.querySelector(`label[for=${window.person}]`).innerHTML} (${date}). Protein: ${protein.toFixed(1)}, Calories: ${Math.round(calories)}, Type: ${type}`);
     updateTracker();
     window.trackerTablePerson = undefined;
     if (document.getElementById("tracker-toggle").checked) {
@@ -260,7 +260,7 @@ function fillTrackerTable() {
         else {
             for (let i = 0; i < proteinList.length; i++) {
                 const row = table.insertRow();
-                row.insertCell(0).textContent = Math.round(proteinList[i]);
+                row.insertCell(0).textContent = proteinList[i].toFixed(1);
                 row.insertCell(1).textContent = Math.round(calorieList[i]);
                 row.insertCell(2).textContent = typeList[i];
             }
@@ -299,7 +299,7 @@ function addNewFood() {
     caloriesInput.value = "";
     window.receipes[name] = {"protein": protein, "calories": calories};
     saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
-    logCommand(`Food: added. Name: ${name}, Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}`);
+    logCommand(`Food: added. Name: ${name}, Protein: ${protein.toFixed(1)}, Calories: ${Math.round(calories)}`);
 
     const table = document.getElementById("foodListTable").getElementsByTagName("tbody")[0];
     if (table.rows[0] && table.rows[0].cells[0].textContent === "-") {
@@ -426,7 +426,7 @@ function addNewReceipe() {
     totalCalories = totalCalories / weightDiff * 100;
     window.receipes[name] = {"protein": totalProtein, "calories": totalCalories, "weight": weightDiff, "receipe": [...window.foodList]};
     saveData(saveStorage = false, saveReceipes = true, saveLogs = false, saveContainers = false);
-    logCommand(`Receipe: added. Name: ${name}, Protein: ${Math.round(totalProtein)}, Calories: ${Math.round(totalCalories)}`);
+    logCommand(`Receipe: added. Name: ${name}, Protein: ${totalProtein.toFixed(1)}, Calories: ${Math.round(totalCalories)}`);
     window.foodList = [];
     document.getElementById("receipeTable").getElementsByTagName("tbody")[0].innerHTML = "";
 
@@ -587,7 +587,7 @@ function undoWeight() {
     const date = window.storage[window.person].dates.pop();
     const weight = window.storage[window.person].weights.pop();
     saveData(saveStorage=true, saveReceipes = false, saveLogs = false, saveContainers = false, saveContainers = false);
-    logCommand(`Weight: removed from ${document.querySelector(`label[for=${window.person}]`).innerHTML}. Weight: ${weight.toFixed(1)}, Date: ${date}`);
+    logCommand(`Weight: removed from ${document.querySelector(`label[for=${window.person}]`).innerHTML}.  Date: ${date}, Weight: ${weight.toFixed(1)}`);
     updateWeight();
     window.weightTablePerson = undefined;
     if (document.getElementById("weight-toggle").checked) {
@@ -598,7 +598,7 @@ function undoWeight() {
 function updateWeight() {
     const weights = window.storage[window.person].weights;
     const diff = -(weights[weights.length-1] - weights[0]);
-    document.getElementById("weightLoss").innerHTML = isNaN(diff) ? "0 kg" : diff + " kg";
+    document.getElementById("weightLoss").innerHTML = isNaN(diff) ? "0 kg" : diff.toFixed(1) + " kg";
     weightChart.data.labels = window.storage[window.person].dates;
     weightChart.data.datasets[0].data = window.storage[window.person].weights;
     weightChart.update();
@@ -645,7 +645,7 @@ function changeSettings() {
     window.storage[window.person].proteinSetting = protein;
     window.storage[window.person].caloriesSetting = calories;
     saveData(saveStorage = true, saveReceipes = false, saveLogs = false, saveContainers = false);
-    logCommand(`Settings: changed dailys for ${document.querySelector(`label[for=${window.person}]`).innerHTML}. Protein: ${Math.round(protein)}, Calories: ${Math.round(calories)}`);
+    logCommand(`Settings: changed dailys for ${document.querySelector(`label[for=${window.person}]`).innerHTML}. Protein: ${protein.toFixed(1)}, Calories: ${Math.round(calories)}`);
     const info = document.getElementById("settingsInfo");
     info.hidden = false;
     setTimeout(() => {info.hidden = true;}, 2000);
@@ -737,8 +737,9 @@ function pressPersonSelect() {
 }
 
 function searchSuggestions(input, container, searchArray) {
-    const results = searchArray.filter(item => item.toLowerCase().includes(input.value.toLowerCase()));
-    results.sort((a, b) => a.indexOf(input.value) - b.indexOf(input.value));
+    let search = input.value.toLowerCase().replace(/[\s()\[\],.]/g, "");
+    const results = searchArray.filter(item => item.toLowerCase().replace(/[\s()\[\],.]/g, "").includes(search));
+    results.sort((a, b) => a.indexOf(search) - b.indexOf(search));
     container.innerHTML = "";
     results.slice(0, 5).forEach(result => {
         const element = document.createElement("div");
@@ -859,7 +860,7 @@ function showFoodPrompt(item, deleteIndex) {
                 document.getElementById("containerListTable").deleteRow(deleteIndex);
                 delete window.containers[item];
                 saveData(saveStorage = false, saveReceipes = true, saveLogs = true, saveContainers = true);
-                logCommand(`Container: removed. Name: ${item}, Weight: ${container}`);
+                logCommand(`Container: removed. Name: ${item}, Weight: ${Math.round(container)}`);
                 hidePrompt("food");
             }
             prompt.innerHTML = `<p>Delete container ${item}?</p>`;
