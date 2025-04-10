@@ -977,6 +977,8 @@ function showSettingsPrompt(file) {
             window.logs = loadedData.logs;
             window.containers = loadedData.containers;
             saveData(saveStorage=true, saveReceipes=true, saveLogs=true, saveContainers = true);
+            document.getElementById("dailyProtein").placeholder = window.storage[window.person].proteinSetting;
+            document.getElementById("dailyCalories").placeholder = window.storage[window.person].caloriesSetting;
             prompt.innerHTML = `<p>Data was successfully loaded from '${file.name}'!</p>`;
             prompt.style.display = "block";
             setTimeout(() => {hidePrompt("settings");}, 2000);
