@@ -1,10 +1,20 @@
 @echo off
 setlocal enabledelayedexpansion
 
-for /f "tokens=2 delims=:" %%A in ('ipconfig ^| findstr "IPv4 Address"') do (
-    set ip=%%A
+echo Starting ADB server...
+sdk_platform_tools\adb.exe start-server
+set DEVICE_FOUND=
+for /f "tokens=1,2" %%a in ('sdk_platform_tools\adb.exe devices') do (
+    if "%%b"=="device" (
+        set DEVICE_FOUND=1
+    )
 )
-for /f "tokens=* delims= " %%A in ("!ip!") do set ip=%%A
+if not defined DEVICE_FOUND (
+    echo No authorized device found. Please connect and authorize a device. Check 'install.txt'.
+    pause
+    exit
+)
+echo Device connected and authorized.
 
-echo Install app under: http://%ip%:8000
+echo Install app under: localhost:8000
 python -m http.server 8000
