@@ -5,7 +5,8 @@ const CACHE_ASSETS = [
     "/index.html",
     "/js_css/styles.css",
     "/js_css/app.js",
-    "/js_css/chart.js"
+    "/js_css/chart.js",
+    "/js_css/annotations.js",
 ];
 
 self.addEventListener("install", (event) => {
