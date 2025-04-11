@@ -200,7 +200,7 @@ function addTrackerValue() {
     const name = nameInput.value;
     const info = document.getElementById("trackerInfo");
     let type = "Direct input";
-    if (!(protein+calories)) {
+    if (!proteinInput.value && !caloriesInput.value) {
         if (!name || !amount) {
             info.innerHTML = "Enter a name and amount!";
             info.hidden = false;
@@ -633,7 +633,7 @@ function addWeightValue() {
     const weightInput = document.getElementById("weightInput");
     const weight = Number(weightInput.value);
     const info = document.getElementById("weightInfo");
-    if (!weight) {
+    if (!weightInput.value) {
         info.innerHTML = "No weight given!";
         info.hidden = false;
         setTimeout(() => {info.hidden = true;}, 2000);
@@ -681,11 +681,14 @@ function updateWeight() {
     const weights = window.storage[window.person].weights;
     const diff = -(weights[weights.length-1] - weights[0]);
     document.getElementById("weightLoss").innerHTML = isNaN(diff) ? "0 kg" : diff.toFixed(1) + " kg";
-    weightChart.data.labels = window.storage[window.person].dates;
-    weightChart.data.datasets[0].data = window.storage[window.person].weights;
+    const timeDiffs = window.storage[window.person].dates.map(date =>
+        (stringToDate(date) - stringToDate(window.storage[window.person].dates[0])) / (1000 * 60 * 60 * 24));
+    weightChart.data.datasets[0].data = timeDiffs.map((diff, index) => ({x: diff, y: window.storage[window.person].weights[index]}));
     weightChart.options.plugins.annotation.annotations.goal.yMin = window.storage[window.person].weightGoal;
     weightChart.options.plugins.annotation.annotations.goal.yMax = window.storage[window.person].weightGoal;
     weightChart.options.scales.y.min = window.storage[window.person].weightGoal - 2;
+    weightChart.options.scales.x.min = timeDiffs[0];
+    weightChart.options.scales.x.max = timeDiffs[timeDiffs.length-1];
     weightChart.update();
 }
 
@@ -723,9 +726,9 @@ function changeSettings() {
     let calories = Number(caloriesInput.value);
     const weightInput = document.getElementById("weightGoal");
     let weight = Number(weightInput.value);
-    protein = protein ? protein : window.storage[window.person].proteinSetting;
-    calories = calories ? calories : window.storage[window.person].caloriesSetting;
-    weight = weight ? weight : window.storage[window.person].weightGoal;
+    protein = proteinInput.value ? protein : window.storage[window.person].proteinSetting;
+    calories = caloriesInput.value ? calories : window.storage[window.person].caloriesSetting;
+    weight = weightInput.value ? weight : window.storage[window.person].weightGoal;
     proteinInput.value = "";
     caloriesInput.value = "";
     weightInput.value = "";
@@ -1126,13 +1129,11 @@ document.getElementById("containerContainer").addEventListener("mousedown", () =
 const weightChart = new Chart(document.getElementById("scatter").getContext("2d"), {
     type: "line",
     data: {
-        labels: window.storage.person1.dates,
         datasets: [{
-            data: window.storage.person1.weights,
             borderWidth: 1,
             borderColor: "#2e4065",
             backgroundColor: "#2e4065",
-        }],
+        }]
     },
     options: {
         plugins: {
@@ -1141,7 +1142,8 @@ const weightChart = new Chart(document.getElementById("scatter").getContext("2d"
             },
             tooltip: {
                 callbacks: {
-                    label: function(item) {return item.raw.toFixed(1) + " kg";},
+                    label: item => item.raw.y.toFixed(1) + " kg",
+                    title: item => window.storage[window.person].dates[item[0].dataIndex],
                 }
             },
             annotation: {
@@ -1158,13 +1160,22 @@ const weightChart = new Chart(document.getElementById("scatter").getContext("2d"
         },
         scales: {
             x: {
+                type: "linear",
                 ticks: {
                     maxRotation: 60,
                     minRotation: 60,
+                    stepSize: 1,
+                    callback: value => {
+                        const xValues = Chart.getChart("scatter").data.datasets[0].data.map(item => item.x);
+                        const index = xValues.indexOf(value);
+                        return index >= 0 ? window.storage[window.person].dates[index] : "";
+                    }
                 }
             },
             y: {
-                min: window.storage[window.person].weightGoal - 2,
+                ticks: {
+                    stepSize: 1,
+                }
             }
         }
     }
