@@ -276,7 +276,7 @@ function fillTrackerTable() {
     const table = document.getElementById("trackerTable").getElementsByTagName("tbody")[0];
     const lightColor = getComputedStyle(document.documentElement).getPropertyValue("--lighter_color");
     table.innerHTML = "";
-    for (let day of ["Yesterday", "Today", "Tomorrow"]) {
+    for (let day of ["Tomorrow", "Today", "Yesterday"]) {
         const proteinList = window.storage[window.person]["protein"+day];
         const calorieList = window.storage[window.person]["calories"+day];
         const typeList = window.storage[window.person]["types"+day];
@@ -713,7 +713,7 @@ function fillWeightTable() {
 
 function logCommand(log) {
     window.logs.unshift(log);
-    if (window.logs.length > 20) {
+    if (window.logs.length > 40) {
         window.logs.pop();
     }
     saveData(saveStorage = false, saveReceipes = false, saveLogs = true, saveContainers = false);
@@ -1130,7 +1130,7 @@ const weightChart = new Chart(document.getElementById("scatter").getContext("2d"
     type: "line",
     data: {
         datasets: [{
-            borderWidth: 1,
+            borderWidth: 3,
             borderColor: "#2e4065",
             backgroundColor: "#2e4065",
         }]
