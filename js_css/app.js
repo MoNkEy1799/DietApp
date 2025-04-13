@@ -1131,8 +1131,8 @@ const weightChart = new Chart(document.getElementById("scatter").getContext("2d"
     data: {
         datasets: [{
             borderWidth: 3,
-            borderColor: "#2e4065",
-            backgroundColor: "#2e4065",
+            borderColor: "#8b8b8e",
+            backgroundColor: "#8b8b8e",
         }]
     },
     options: {
@@ -1152,8 +1152,8 @@ const weightChart = new Chart(document.getElementById("scatter").getContext("2d"
                         type: "line",
                         yMin: 0.5,
                         yMax: 0.5,
-                        borderColor: "#8b8b8e",
-                        borderWidth: 1,
+                        borderColor: "#2e4065",
+                        borderWidth: 2,
                     }
                 }
             }
