@@ -292,7 +292,7 @@ function fillTrackerTable() {
             row.insertCell(2).textContent = "-";
         }
         else {
-            for (let i = 0; i < proteinList.length; i++) {
+            for (let i = proteinList.length - 1; i >= 0; i--) {
                 const row = table.insertRow();
                 row.insertCell(0).textContent = proteinList[i].toFixed(1);
                 row.insertCell(1).textContent = Math.round(calorieList[i]);
@@ -1130,9 +1130,8 @@ const weightChart = new Chart(document.getElementById("scatter").getContext("2d"
     type: "line",
     data: {
         datasets: [{
-            borderWidth: 3,
-            borderColor: "#8b8b8e",
-            backgroundColor: "#8b8b8e",
+            borderColor: "#d7d7d7",
+            backgroundColor: "#3b3b3e",
         }]
     },
     options: {
@@ -1152,10 +1151,17 @@ const weightChart = new Chart(document.getElementById("scatter").getContext("2d"
                         type: "line",
                         yMin: 0.5,
                         yMax: 0.5,
-                        borderColor: "#2e4065",
+                        borderColor: "#28344f",
                         borderWidth: 2,
                     }
                 }
+            }
+        },
+        elements: {
+            point: {
+                radius: 5,
+                hitRadius: 10,
+                borderWidth: 2,
             }
         },
         scales: {
