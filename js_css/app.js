@@ -821,11 +821,13 @@ function pressPersonSelect() {
     window.person = document.querySelector("input[name='person']:checked").value;
     if (activeTab === "tracker") {
         updateTracker();
-        document.getElementById("tracker-toggle").checked = false;
+        window.trackerTablePerson = undefined;
+        fillTrackerTable();
     }
     else if (activeTab === "weight") {
         updateWeight();
-        document.getElementById("weight-toggle").checked = false;
+        window.weightTablePerson = undefined;
+        fillWeightTable();
     }
     else if (activeTab === "settings") {
         document.getElementById("dailyProtein").placeholder = window.storage[window.person].proteinSetting;
