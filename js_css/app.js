@@ -102,14 +102,17 @@ function loadData() {
         }
     }
     // same for receipes, containers and logs, default is empty
-    if (window.receipes === null) {
+    if (!window.receipes) {
         window.receipes = {};
     }
-    if (window.containers === null) {
+    if (!window.containers) {
         window.containers = {};
     }
-    if (window.logs === null) {
+    if (!window.logs) {
         window.logs = [];
+    }
+    if (!window.storage.foodList) {
+        window.storage.foodList = [];
     }
 
     // fill the food/receipe and container table with loaded data
@@ -189,17 +192,29 @@ function saveData(saveStorage, saveReceipes, saveLogs, saveContainers) {
     }
 }
 
+function toggleTrackerType() {
+    const div = document.getElementById("typeInputDiv");
+    if (document.getElementById("proteinInput").value || document.getElementById("caloriesInput").value) {
+        div.style.display = "flex";
+        return;
+    }
+    div.style.display = "none";
+}
+
 function addTrackerValue() {
     const proteinInput = document.getElementById("proteinInput");
     let protein = Number(proteinInput.value);
     const caloriesInput = document.getElementById("caloriesInput");
     let calories = Number(caloriesInput.value);
+    const typeInput = document.getElementById("typeInput");
+    let type = typeInput.value;
+    type = type ? type : typeInput.placeholder;
+
     const amountInput = document.getElementById("foodAmountInput");
     const amount = Number(amountInput.value);
     const nameInput = document.getElementById("foodNameInput");
     const name = nameInput.value;
     const info = document.getElementById("trackerInfo");
-    let type = "Direct input";
     if (!proteinInput.value && !caloriesInput.value) {
         if (!name || !amount) {
             info.innerHTML = "Enter a name and amount!";
@@ -237,6 +252,7 @@ function addTrackerValue() {
     `Added value for ${document.querySelector(`label[for=${window.person}]`).innerHTML} (${date}). `+
     `Protein: ${protein.toFixed(1)}, Calories: ${Math.round(calories)}, Type: ${type}`);
     updateTracker();
+    toggleTrackerType();
     window.trackerTablePerson = undefined;
     if (document.getElementById("tracker-toggle").checked) {
         fillTrackerTable();
@@ -1127,6 +1143,8 @@ document.getElementById("containerInput").addEventListener("input", () => {
     }
 });
 document.getElementById("containerContainer").addEventListener("mousedown", () => {suggestionClick = true;});
+document.getElementById("proteinInput").addEventListener("input", () => {toggleTrackerType();});
+document.getElementById("caloriesInput").addEventListener("input", () => {toggleTrackerType();});
 
 const weightChart = new Chart(document.getElementById("scatter").getContext("2d"), {
     type: "line",
