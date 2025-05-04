@@ -241,6 +241,7 @@ function addTrackerValue() {
 
     proteinInput.value = "";
     caloriesInput.value = "";
+    typeInput.value = "";
     amountInput.value = "";
     nameInput.value = "";
     const date = document.getElementById("dateSelector").value;
