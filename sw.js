@@ -1,4 +1,4 @@
-const CACHE_NAME = "dietcache-v0";
+const CACHE_NAME = "dietcache-v2";
 const CACHE_ASSETS = [
     "/",
     "/manifest.json",
