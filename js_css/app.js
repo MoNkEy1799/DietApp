@@ -884,22 +884,16 @@ function pressPersonSelect() {
 function suggestionScore(input, suggestion) {
     input = input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     suggestion = suggestion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-
     let maxRun = 0;
-    let run = 0;
-    let j = 0;
-
-    for (let i = 0; i < suggestion.length && j < input.length; i++) {
-        if (suggestion[i] === input[j]) {
+    for (let i = 0; i < suggestion.length; i++) {
+        let run = 0;
+        let j = 0;
+        while (i + j < suggestion.length && j < input.length && suggestion[i + j] === input[j]) {
             run++;
             j++;
         }
-        else {
-            if (run > maxRun) maxRun = run;
-            run = 0;
-        }
+        if (run > maxRun) maxRun = run;
     }
-    if (run > maxRun) maxRun = run;
     return maxRun;
 }
 
