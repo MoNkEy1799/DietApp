@@ -882,9 +882,8 @@ function pressPersonSelect() {
 }
 
 function searchSuggestions(input, container, searchArray) {
-    let search = input.value.toLowerCase().replace(/[\s()\[\],.]/g, "");
-    const results = searchArray.filter(item => item.toLowerCase().replace(/[\s()\[\],.]/g, "").includes(search));
-    results.sort((a, b) => a.toLowerCase().replace(/[\s()\[\],.]/g, "").indexOf(search) - b.toLowerCase().replace(/[\s()\[\],.]/g, "").indexOf(search));
+    const regex = new RegExp(input.value.split("").join(".*"), "i");
+    const results = searchArray.filter(item => regex.test(item));
     container.innerHTML = "";
     results.slice(0, 5).forEach(result => {
         const element = document.createElement("div");
