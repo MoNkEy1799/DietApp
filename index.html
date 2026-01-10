@@ -14,10 +14,10 @@
     <p id="dateDisplay"><b>Today:</b></p>
     <div id="personSelectorContainer">
         <input type="radio" id="person1" name="person" value="person1" checked onclick="pressPersonSelect()">
-        <label for="person1">Louis</label>
+        <label for="person1">-</label>
 
         <input type="radio" id="person2" name="person" value="person2" onclick="pressPersonSelect()">
-        <label for="person2">Julia</label>
+        <label for="person2">-</label>
     </div>
 
     <div class="tab-container">
@@ -72,9 +72,9 @@
             <div class="input-group">
                 <label for="dateSelector">Date:</label>
                 <select id="dateSelector" onchange="updateTracker()">
-                    <option value="Yesterday">Yesterday</option>
-                    <option selected value="Today">Today</option>
                     <option value="Tomorrow">Tomorrow</option>
+                    <option selected value="Today">Today</option>
+                    <option value="Yesterday">Yesterday</option>
                 </select>
                 <button id="addButton" onclick="addTrackerValue()">Add</button>
             </div>
