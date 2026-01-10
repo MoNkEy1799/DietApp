@@ -881,9 +881,35 @@ function pressPersonSelect() {
     }
 }
 
+function suggestionScore(input, suggestion) {
+    input = input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    suggestion = suggestion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    let maxRun = 0;
+    let run = 0;
+    let j = 0;
+
+    for (let i = 0; i < suggestion.length && j < input.length; i++) {
+        if (suggestion[i] === input[j]) {
+            run++;
+            j++;
+        }
+        else {
+            if (run > maxRun) maxRun = run;
+            run = 0;
+        }
+    }
+    if (run > maxRun) maxRun = run;
+    return maxRun;
+}
+
 function searchSuggestions(input, container, searchArray) {
     const regex = new RegExp(input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split("").join(".*"), "i");
-    const results = searchArray.filter(item => regex.test(item.normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
+    const results = searchArray
+    .filter(item => regex.test(item.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))
+    .map(item => ({ item, score: suggestionScore(input, item) }))
+    .sort((a, b) => b.score - a.score)
+    .map(item => item.item);
     container.innerHTML = "";
     results.slice(0, 5).forEach(result => {
         const element = document.createElement("div");
