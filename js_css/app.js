@@ -882,8 +882,8 @@ function pressPersonSelect() {
 }
 
 function searchSuggestions(input, container, searchArray) {
-    const regex = new RegExp(input.value.split("").join(".*"), "i");
-    const results = searchArray.filter(item => regex.test(item));
+    const regex = new RegExp(input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split("").join(".*"), "i");
+    const results = searchArray.filter(item => regex.test(item.normalize("NFD").replace(/[\u0300-\u036f]/g, "")));
     container.innerHTML = "";
     results.slice(0, 5).forEach(result => {
         const element = document.createElement("div");
