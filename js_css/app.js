@@ -886,13 +886,13 @@ function suggestionScore(input, suggestion) {
     suggestion = suggestion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     let maxRun = 0;
     for (let i = 0; i < suggestion.length; i++) {
-        let run = 0;
-        let j = 0;
-        while (i + j < suggestion.length && j < input.length && suggestion[i + j] === input[j]) {
-            run++;
-            j++;
+        for (let j = 0; j < input.length; j++) {
+            let run = 0;
+            while (i + run < suggestion.length && j + run < input.length && suggestion[i + run] === input[j + run]) {
+                run++;
+            }
+            if (run > maxRun) maxRun = run;
         }
-        if (run > maxRun) maxRun = run;
     }
     return maxRun;
 }
