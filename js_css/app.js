@@ -884,6 +884,7 @@ function pressPersonSelect() {
 function suggestionScore(input, suggestion) {
     input = input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     suggestion = suggestion.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    if (input === suggestion) return 100;
     let maxRun = 0;
     for (let i = 0; i < suggestion.length; i++) {
         for (let j = 0; j < input.length; j++) {
@@ -891,6 +892,7 @@ function suggestionScore(input, suggestion) {
             while (i + run < suggestion.length && j + run < input.length && suggestion[i + run] === input[j + run]) {
                 run++;
             }
+            if (suggestion[i-1] === " " || i === 0) run++;
             if (run > maxRun) maxRun = run;
         }
     }
@@ -902,6 +904,7 @@ function searchSuggestions(input, container, searchArray) {
     const results = searchArray
     .filter(item => regex.test(item.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))
     .map(item => ({ item, score: suggestionScore(input, item) }))
+    .filter(item => item.score > 1)
     .sort((a, b) => b.score - a.score)
     .map(item => item.item);
     container.innerHTML = "";
