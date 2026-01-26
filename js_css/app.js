@@ -972,7 +972,8 @@ async function readFile() {
 function showFoodPrompt(item, deleteIndex) {
     document.getElementById("foodOverlay").style.display = "block";
     const prompt = document.getElementById("foodPrompt");
-    prompt.innerHTML = `<h3><u>${item}</u></h3>`;
+    prompt.innerHTML = `<h3 contenteditable=\"true\"><u id=\"promptTitle\">${item}</u></h3>`;
+    prompt.currentName = item;
     let food, receipe, container;
     if (item in window.receipes) {
         food = window.receipes[item];
@@ -1152,9 +1153,32 @@ function showSettingsPrompt(file) {
     prompt.style.display = "block";
 }
 
-function hidePrompt(name) {
+function hidePrompt(name, save) {
     document.getElementById(`${name}Overlay`).style.display = "none";
     document.getElementById(`${name}Prompt`).style.display = "none";
+    if (save) {
+        const oldName = document.getElementById(`${name}Prompt`).currentName;
+        const newName = document.getElementById("promptTitle").textContent;
+        if (oldName === newName) return;
+        let type;
+        if (oldName in window.receipes) {
+            type = "Food";
+            if ("receipe" in window.receipes[oldName]) {
+                type = "Receipe";
+            }
+            window.receipes[newName] = window.receipes[oldName];
+            delete window.receipes[oldName];
+        }
+        else if (oldName in window.containers) {
+            type = "Container";
+            window.containers[newName] = window.containers[oldName];
+            delete window.containers[oldName];
+        }
+        logCommand(`<b>${window.storage.today} ${new Date().toLocaleTimeString("de-DE")} - ${type}</b><br>`+
+        `Changed. Old name: ${oldName}, New name: ${newName}`);
+        saveData(saveStorage=false, saveReceipes=true, saveLogs=true, saveContainers=true);
+        fillReceipeContainerTable();
+    }
 }
 
 let suggestionClick = false;

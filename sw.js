@@ -10,6 +10,7 @@ const CACHE_ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => cache.addAll(CACHE_ASSETS))
     );
@@ -17,9 +18,17 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
     event.waitUntil(
-        caches.keys().then((names) =>
-            Promise.all(names.map((name) => (name !== CACHE_NAME ? caches.delete(name) : null)))
-    ));
+        Promise.all([
+            caches.keys().then(names =>
+                Promise.all(
+                    names.map(name =>
+                        name !== CACHE_NAME ? caches.delete(name) : null
+                    )
+                )
+            ),
+            self.clients.claim()
+        ])
+    );
 });
 
 self.addEventListener("fetch", (event) => {
