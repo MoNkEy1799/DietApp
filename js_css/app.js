@@ -892,7 +892,8 @@ function suggestionScore(input, suggestion) {
             while (i + run < suggestion.length && j + run < input.length && suggestion[i + run] === input[j + run]) {
                 run++;
             }
-            if (suggestion[i-1] === " " || i === 0) run++;
+            if (i === 0) run += 2;
+            if (suggestion[i-1] === " ") run++;
             if (run > maxRun) maxRun = run;
         }
     }
