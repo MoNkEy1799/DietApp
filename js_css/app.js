@@ -1,4 +1,4 @@
-function openTab(evt, tabName) {
+function openTab(tabName) {
     let i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -10,7 +10,7 @@ function openTab(evt, tabName) {
         tablinks[i].classList.remove("active");
     }
     document.getElementById(tabName).classList.add("active");
-    evt.currentTarget.classList.add("active");
+    document.querySelector(`.tablink[value="${tabName.toLowerCase()}"]`).classList.add("active");
     if (tabName === "Tracker") {
         document.getElementById("tracker-toggle").checked = false;
         updateTracker();
@@ -1181,7 +1181,24 @@ function hidePrompt(name, save) {
     }
 }
 
+function handleSwipe() {
+    const mapping = {
+        tracker: 0, 0: "Tracker",
+        foods: 1, 1: "Foods",
+        weight: 2, 2: "Weight",
+        settings: 3, 3: "Settings"
+    };
+    const idx = mapping[document.getElementsByClassName("tablink active")[0].value];
+    if (Math.abs(mousePos.yEnd - mousePos.yStart) > 30) return;
+    const xDiff = mousePos.xEnd - mousePos.xStart;
+    if (Math.abs(xDiff) > 5) {
+        if (xDiff < 0 && idx !== 3) openTab(mapping[idx + 1]);
+        else if (xDiff > 0 && idx !== 0) openTab(mapping[idx - 1]);
+    }
+}
+
 let suggestionClick = false;
+let mousePos = {xStart: null, xEnd: null, yStart: null, yEnd: null}
 // first thing is load data from local storage
 loadData();
 updateTracker();
@@ -1220,6 +1237,15 @@ document.getElementById("containerInput").addEventListener("input", () => {
 document.getElementById("containerContainer").addEventListener("mousedown", () => {suggestionClick = true;});
 document.getElementById("proteinInput").addEventListener("input", () => {toggleTrackerType();});
 document.getElementById("caloriesInput").addEventListener("input", () => {toggleTrackerType();});
+document.addEventListener("touchstart", evt => {
+    mousePos.xStart = evt.changedTouches[0].screenX;
+    mousePos.yStart = evt.changedTouches[0].screenY;
+});
+document.addEventListener("touchend", evt => {
+    mousePos.xEnd = evt.changedTouches[0].screenX;
+    mousePos.yEnd = evt.changedTouches[0].screenY;
+    handleSwipe();
+});
 
 const weightChart = new Chart(document.getElementById("scatter").getContext("2d"), {
     type: "line",

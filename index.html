@@ -21,10 +21,10 @@
     </div>
 
     <div class="tab-container">
-        <button class="tablink active" onclick="openTab(event, 'Tracker')" value="tracker">Tracker</button>
-        <button class="tablink" onclick="openTab(event, 'Foods')" value="foods">Foods</button>
-        <button class="tablink" onclick="openTab(event, 'Weight')" value="weight">Weight</button>
-        <button class="tablink" onclick="openTab(event, 'Settings')" value="settings">Settings</button>
+        <button class="tablink active" onclick="openTab('Tracker')" value="tracker">Tracker</button>
+        <button class="tablink" onclick="openTab('Foods')" value="foods">Foods</button>
+        <button class="tablink" onclick="openTab('Weight')" value="weight">Weight</button>
+        <button class="tablink" onclick="openTab('Settings')" value="settings">Settings</button>
     </div>
     
     <div id="Tracker" class="tabcontent active">
@@ -343,8 +343,8 @@
 
         <p>Save and load all stored data to/from a file.</p>
         <div class="settings-group">
-            <button onclick="saveFile()">Save Data to File</button>
-            <button onclick="readFile()">Load Data from File</button>
+            <button onclick="saveFile()">Export Data to File</button>
+            <button onclick="readFile()">Import Data from File</button>
         </div>
 
         <div class="horizontal-line"></div>
